@@ -70,7 +70,8 @@ exports.authenticate = async (req, res) => {
       };
     }
   } catch (error) {
-    throw new Error("Server Error " + error.message)
+    console.error("Error occurred in authenticate method:", error);
+    throw new Error("Server Error " + error.message);
   }
 };
 
