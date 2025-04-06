@@ -1,0 +1,89 @@
+.posbody{
+    font-size: 12px;
+}
+tr, th{
+    padding: 3px;
+    margin:2px;
+    vertical-align: middle;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper ,.mat-form-field-flex{
+    margin: 0 0;
+    padding: 0;
+}
+.right-border{
+    border-right: 2px solid black ;
+}
+.input-field{
+    padding: 5px;
+}
+.input-field input{
+    padding: 0;
+}
+
+
+
+
+.receipt-body {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    font-weight: bolder;
+    color: #000;
+    text-align: center;
+    padding: 10px;
+}
+
+.receipt-container {
+    width: 250px; /* Adjust based on the thermal printer paper width */
+    margin: 0 auto;
+    text-align: left;
+    font-size: 1em;
+    font-weight: 400;
+    color: #000;
+    padding: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.receipt-body h2 {
+    text-align: center;
+    margin: 0;
+}
+.tbl-h{
+    border-bottom: 1px dashed #000;
+    
+}
+.tbl-th{
+    text-align: left;
+}
+.receipt-info, .receipt-items, .receipt-summary, .receipt-footer, .customer-info {
+    border-top: 1px dashed #000;
+    padding-top: 10px;
+}
+
+.receipt-info p, .receipt-footer p, .customer-info p {
+    margin: 5px 0;
+}
+
+.item-header, .item, .receipt-summary {
+    display: flex;
+    justify-content: space-between;
+}
+
+.item-header {
+    font-weight: bold;
+}
+
+.item:not(:last-child) {
+    margin-bottom: 5px;
+}
+.receipt-items table{
+    width: 100%;
+}
+
+.receipt-items th{
+    text-align: center;
+}
+.receipt-items tr{
+    max-height: 10px;
+    overflow: hidden;
+}

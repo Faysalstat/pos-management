@@ -1,0 +1,77 @@
+<app-page-loader *ngIf="showLoader"></app-page-loader>
+<mat-card>
+    <!-- <app-add-product></app-add-product> -->
+    <!-- <hr> -->
+    <h1>Product Stock:</h1>
+    <div class="row mt-3">
+        <div class="col-md-3">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Brand Name</mat-label>
+                <input placeholder="Brand Name" pInputText (change)="fetchAllProducts()" [ngModelOptions]="{standalone:true}"
+                  [(ngModel)]="brandName" matInput>
+              </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field appearance="outline" class="input-field">
+                <mat-label>Product Category</mat-label>
+                <mat-select (selectionChange)="fetchAllProducts()" [ngModelOptions]="{standalone:true}"
+                [(ngModel)]="categoryName">
+                    <mat-option *ngFor="let cat of categories" [value]="cat.value">{{cat?.label}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Product Code</mat-label>
+                <input placeholder="Product Code" pInputText (change)="fetchAllProducts()" [ngModelOptions]="{standalone:true}"
+                  [(ngModel)]="code" matInput>
+              </mat-form-field>
+        </div>
+        <div class="col-md-3">
+            <div class="input-field">
+                <button mat-raised-button (click)="refreshFilter()" color="warn">
+                    <mat-icon>refresh</mat-icon>Refresh
+                </button>
+            </div>
+        </div>
+
+    </div>
+    <div class=" row">
+        <div class="col-md-12">
+            <table class="table" >
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Code</th>
+                        <th>Product Name</th>
+                        <th>Brand Name</th>
+                        <th>Package Qnt</th>
+                        <th>Quantity</th>
+                        <th>Buying Price</th>
+                        <th>Selliing Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="row-hover" *ngFor="let product of productList; index as i" (click)="onselectProduct(product)">
+                        <th scope="row">{{i+offset+1}}</th>
+                        <th>{{product?.productCode}}</th>
+                        <th>{{product?.productName}}</th>
+                        <th>{{product?.brandName}}</th>
+                        <th>{{packProduct(product)}}</th>
+                        <th>{{(product?.quantity)||0}} {{product?.unitType}}</th>
+                        <th>{{product?.costPricePerUnit || 0}} BDT</th>
+                        <th>{{product?.sellingPricePerUnit || 0}} BDT</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-12">
+            <div style="float:right ;font-size: 16px;">
+                <mat-paginator [length]="length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                    (page)="pageChange($event)" aria-label="Select page">
+                </mat-paginator>
+            </div>
+        </div>
+    </div>
+</mat-card>

@@ -1,0 +1,255 @@
+<mat-card class="posbody">
+    <h1>Create Sale Invoice:</h1>
+    <div class="row">
+        <h2 style="font-weight:bold;">
+            <mat-icon>face</mat-icon> CUSTOMER
+        </h2>
+        <div class="col-md-12">
+            <hr>
+        </div>
+        
+        <app-page-loader *ngIf="showLoader"></app-page-loader>
+        <div class="col-md-4">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Mobile No:</mat-label>
+                <input (change)="searchCustomer()" pInputText [ngModelOptions]="{standalone:true}" [disabled]="isEdit"
+                    [(ngModel)]="person.contactNo" placeholder="Contact No" matInput>
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Customer Name:</mat-label>
+                <input [ngModelOptions]="{standalone:true}" [(ngModel)]="person.personName" [disabled]="isCustomerExist"
+                    placeholder="Customer Name" matInput>
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Shop Name:</mat-label>
+                <input [ngModelOptions]="{standalone:true}" [(ngModel)]="customer.shopName" [disabled]="isCustomerExist"
+                    placeholder="Shop Name" matInput>
+            </mat-form-field>
+        </div>
+
+        <div class="col-md-12">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Address:</mat-label>
+                <textarea pInputText [ngModelOptions]="{standalone:true}" [disabled]="isCustomerExist"
+                    [(ngModel)]="person.personAddress" matInput></textarea>
+            </mat-form-field>
+        </div>
+        <div class="col-md-12">
+            <h2 style="font-weight:bold ;color:red">Balance: <span style="color:black">{{account.balance}} TAKA</span>
+            </h2>
+        </div>
+        <div class="col-md-12">
+            <button (click)="addCustomer()" mat-raised-button [disabled]="isCustomerExist" color="warn">Add
+                Customer</button>
+        </div>
+        <p style="color:red;font-weight:bolder">{{errMsg}}</p>
+    </div>
+</mat-card>
+<mat-card class="posbody mt-3">
+    <form [formGroup]="saleInvoiceIssueForm" (keydown.enter)="$event.preventDefault()">
+        <div class="row">
+            <div class="col-md-8 right-border">
+                <h2 style="font-weight:bold;">
+                    <mat-icon>shopping_cart</mat-icon> ORDER
+                </h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <form>
+                            <mat-form-field class="input-field" appearance="outline">
+                                <mat-label>Select Product</mat-label>
+                                <input type="text" matInput [formControl]="productName" [matAutocomplete]="auto">
+                                <mat-autocomplete (optionSelected)="productSelected($event)" #auto="matAutocomplete"
+                                    [displayWith]="displayFn">
+                                    <mat-option *ngFor="let product of filteredOptions | async" [value]="product">
+                                        {{product.productName}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </form>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row" style="padding:0 5px ;">
+                            <div class="col-md-6">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th>{{orderItem.productName}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Unit Type</th>
+                                            <th>{{orderItem.unitType}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Stock</th>
+                                            <th>{{orderItem.quantity}}</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Price Rate</th>
+                                            <th>{{orderItem.pricePerUnit}} Taka</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Packaging Category</th>
+                                            <th>{{orderItem.packagingCategory}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Unit Per Package</th>
+                                            <th>{{orderItem.unitPerPackage}} {{orderItem.unitType}}</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field class="input-field" appearance="outline">
+                            <mat-label>Package Quantity</mat-label>
+                            <input type="number" pInputText [ngModelOptions]="{standalone:true}" [disabled]="isEdit"
+                                (change)="calculateQuantity()" [(ngModel)]="orderItem.packageQuantity"
+                                placeholder="Quantity" matInput>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field class="input-field" appearance="outline">
+                            <mat-label>Loose Quantity</mat-label>
+                            <input type="number" pInputText [ngModelOptions]="{standalone:true}" [disabled]="isEdit"
+                                (change)="calculateQuantity()" [(ngModel)]="orderItem.looseQuantity"
+                                placeholder="Quantity" matInput>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field class="input-field" appearance="outline">
+                            <mat-label>Total Quantity</mat-label>
+                            <input type="number" pInputText [ngModelOptions]="{standalone:true}" [disabled]="true"
+                                (change)="calculateOrder()" [(ngModel)]="orderItem.quantityOrdered"
+                                placeholder="Quantity" matInput>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field class="input-field" appearance="outline">
+                            <mat-label>Total Price (BDT)</mat-label>
+                            <input type="number" pInputText [ngModelOptions]="{standalone:true}" [disabled]="true"
+                                [(ngModel)]="orderItem.totalOrderPrice" placeholder="Selling Price" matInput>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="input-field">
+                            <button (click)="addOrder()" mat-raised-button color="warn">Add
+                                Order</button>
+                        </div> 
+                        <hr class="mt-3">
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <table class="table table-striped" style="text-align:center ;">
+                            <thead>
+                                <tr>
+                                    <th>SN</th>
+                                    <th style="width:50% ;">Product Name</th>
+                                    <th>Rate</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <!-- <th>Action</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngIf="orderList.length==0">
+                                    <th colspan="5" style="font-weight:bold;text-align: center;">No Order Added Yet!
+                                    </th>
+                                </tr>
+                                <tr *ngFor="let order of orderList; index as i">
+                                    <th scope="row">{{i+1}}</th>
+                                    <th>{{order.productName}}</th>
+                                    <th>{{order.pricePerUnit}}</th>
+                                    <th>{{order.quantityOrdered}} {{order.unitType}}</th>
+                                    <th>{{order.totalOrderPrice}} BDT</th>
+                                    <!-- <th>{{order.totalPrice}}</th> -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h2 style="font-weight:bold;">
+                    <mat-icon>assignment</mat-icon> Amount Details
+                </h2>
+                <table class="table table-striped" style="text-align:center ;">
+                    <tfoot style="font-weight:bolder;">
+                        <tr>
+                            <th style="text-align:left;">Total Bill:</th>
+                            <th style="text-align:right;">{{totalPrice}} BDT</th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Previous {{balanceTitle}}:</th>
+                            <th style="text-align:right;">{{previousBalance}} BDT</th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Discount:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field class="input-field" appearance="fill">
+                                    <input type="number" pInputText formControlName="rebate"
+                                        (change)="calculateSummary()" placeholder="Amount" matInput>
+                                </mat-form-field>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Total:</th>
+                            <th style="text-align:right;">{{totalPayableAmount}} BDT</th>
+                        </tr>
+
+                        <tr>
+                            <th style="text-align:left;">Paid:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field class="input-field" appearance="fill">
+                                    <input type="number" pInputText formControlName="totalPaidAmount"
+                                        placeholder="Amount" matInput>
+                                </mat-form-field>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Payment Method:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field appearance="fill" class="input-field">
+                                    <mat-select formControlName="paymentMethod">
+                                        <mat-option *ngFor="let method of paymentMethods"
+                                            [value]="method.value">{{method?.label}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Comment:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field class="input-field" appearance="fill">
+                                    <mat-label>Comment:</mat-label>
+                                    <textarea type="text" pInputText [ngModelOptions]="{standalone:true}"
+                                        [(ngModel)]="comment" matInput>
+
+                                    </textarea>
+                                </mat-form-field>
+
+                            </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th style="float: right;margin-right: 0;">
+                                <button (click)="submitOrder()" mat-raised-button color="warn">Submit</button>
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </form>
+</mat-card>

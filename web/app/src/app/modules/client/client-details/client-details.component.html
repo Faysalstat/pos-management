@@ -1,0 +1,147 @@
+<mat-card>
+    <div class="row">
+        <h3>Person Details</h3>
+        <div class="col-md-12">
+            <hr class="mt-2">
+        </div>
+        <div class="col-md-6">
+            <table class="table ">
+                <tbody>
+                    <tr>
+                        <th>Client Name</th>
+                        <td>{{person?.personName}}</td>
+                    </tr>
+                    <tr>
+                        <th>Contact No</th>
+                        <td>{{person?.contactNo}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table class="table ">
+                <tbody>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{person?.email}}</td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td>{{person?.personAddress}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <h3>Customer Details</h3>
+        <div class="col-md-12">
+            <hr class="mt-2">
+        </div>
+        <div class="col-md-6">
+            <table class="table ">
+                <tbody>
+                    <tr>
+                        <th>Shop Name</th>
+                        <td>{{customer?.shopName}}</td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td>{{customer?.shopAddress}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table class="table ">
+                <tbody>
+                    <tr>
+                        <th>Balance</th>
+                        <td>{{customerAccount?.balance}}</td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td>{{person?.personAddress}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button mat-raised-button (click)="showHistory(true)" color="warn">Show Account History</button>
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <h3>Supplier Details</h3>
+        <div class="col-md-12">
+            <hr class="mt-2">
+        </div>
+        <div class="col-md-6">
+            <table class="table ">
+                <tbody>
+                    <tr>
+                        <th>Code</th>
+                        <td>{{supplyer?.code}}</td>
+                    </tr>
+                    <tr>
+                        <th>Company Name</th>
+                        <td>{{supplyer?.companyName}}</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table class="table ">
+                <tbody>
+                    <tr>
+                        <th>Balance</th>
+                        <td>{{customerAccount?.balance}}</td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td>{{person?.personAddress}}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button mat-raised-button (click)="showHistory(true)" color="warn">Show Account History</button>
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div *ngIf="showAccountHistory" class="row">
+        <h3>Account History</h3>
+        <div class="col-md-12">
+            <hr class="mt-2">
+            <button mat-raised-button (click)="showHistory(false)" color="warn">Close</button>
+            <table class="table">
+                <thead>
+                   <tr>
+                    <th>Sn</th>
+                    <th>Tnx Type</th>
+                    <th>Tnx Date</th>
+                    <th>Tnx Amount</th>
+                    <th>Method</th>
+                    <th>Comment</th>
+                   </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let history of customerAccountistory; index as i">
+                        <td>{{i+1}}</td>
+                        <td>{{history?.tnxType}}</td>
+                        <td>{{history?.tnxDate}}</td>
+                        <td>{{history?.tnxAmount}}</td>
+                        <td>{{history?.paymentMethod}}</td>
+                        <td>{{history?.remark}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</mat-card>

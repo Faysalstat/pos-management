@@ -1,0 +1,26 @@
+
+<div class="container">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <a class="navbar-brand" href="javascript:void(0)"> Hello! {{userProfile}}</a>
+        <div class="container-fluid">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="javascript:void(0)"></a>
+                </li>
+              </ul>
+              <div class="d-flex">
+                <button class="btn btn-danger" (click)="logout()" type="button">Log Out</button>
+              </div>
+        </div>
+    </nav>
+    <div class="row" style="margin-top: 100px;">
+        <div *ngFor="let item of menuItems" class="col-md-4">
+            <a [routerLink]=[item.route]>
+                <mat-card id="menu-card" style="margin:20px;background-color:#79c9f8;">
+                    <img class="img-center" [src]="'assets/img/icons/'+[item?.imgUrl]" width="100" height="100">
+                    <h2 class="menu-label">{{item?.title}}</h2>
+                </mat-card>
+            </a>
+        </div>
+    </div>
+</div>

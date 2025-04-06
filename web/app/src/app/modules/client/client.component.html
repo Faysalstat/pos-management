@@ -1,0 +1,62 @@
+<!-- <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container-fluid">
+        <button style="color: white;font-size:20px;" mat-icon-button  data-bs-toggle="offcanvas" data-bs-target="#offcanvas">
+            <mat-icon>menu</mat-icon>
+        </button>
+    </div>
+</nav>
+<div class="offcanvas offcanvas-start" style="width: 327px;" id="offcanvas">
+    <div class="offcanvas-header bg-dark">
+        <a style="color: #FFF;" class="navbar-brand" data-bs-dismiss="offcanvas" routerLink="/home"><i class="fa fa-home"></i>Home Page</a>
+        <button mat-mini-fab color="warn" data-bs-dismiss="offcanvas">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    <div class="offcanvas-body">
+        <nav class="side-nav">
+            <ul>
+                <li class="has-subnav">
+                    <a data-bs-dismiss="offcanvas" routerLink="customer-list">
+                        <i class="fa fa-list"></i>
+                        <span class="nav-text">
+                            Customer List
+                        </span>
+                    </a>
+                </li>
+                <li class="has-subnav">
+                    <a data-bs-dismiss="offcanvas" routerLink="supplyer-list">
+                        <i class="fa fa-list"></i>
+                        <span class="nav-text">
+                            Supplier List
+                        </span>
+                    </a>
+                </li>
+                <li class="has-subnav">
+                    <a data-bs-dismiss="offcanvas" routerLink="add-supplyer">
+                        <i class="fa fa-plus-square"></i>
+                        <span class="nav-text">
+                            Add Supplier
+                        </span>
+                    </a>
+                </li>
+                <li class="has-subnav">
+                    <a data-bs-dismiss="offcanvas" routerLink="add-customer">
+                        <i class="fa fa-plus-square"></i>
+                        <span class="nav-text">
+                            Add Customer
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<div class="container-fluid mt-3">
+    <router-outlet></router-outlet>
+</div> -->
+
+<div class="grid">
+    <div class="col-12">
+        <router-outlet></router-outlet>    
+    </div>
+</div>

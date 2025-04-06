@@ -1,0 +1,43 @@
+<mat-card class="mt-3">
+    <h2>Add Product Category</h2>
+        <hr>
+    <div class="row">
+        <div class="col-md-6">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Product Category</mat-label>
+                <input [ngModelOptions]="{standalone: true}" [(ngModel)]="category" placeholder="Product Category"
+                    matInput>
+            </mat-form-field>
+        </div>
+        <div class="col-md-6">
+            <div class="input-field">
+                <button mat-raised-button color="warn" (click)="addcategory()">Add</button>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <hr>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Key</th>
+                        <th>Value</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let category of categories;index as i">
+                        <td>{{i+1}}</td>
+                        <td>{{category.key}}</td>
+                        <td>{{category.value}}</td>
+                        <td>
+                            <button mat-mini-fab (click)="deleteItem(category.id)" color="warn">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</mat-card>

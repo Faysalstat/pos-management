@@ -1,0 +1,17 @@
+<mat-card>
+    <h2>Cash Transactions</h2>
+    <mat-tab-group class="mt-4">
+        <mat-tab label="LOAN MANAGEMENT">
+            <app-add-loan-details (loanEvent)="updateBalance($event)" ></app-add-loan-details>
+        </mat-tab>
+        <mat-tab label="EXPENSE">
+            <app-expense (expenseEvent)="updateBalance($event)" ></app-expense>
+        </mat-tab>
+        <mat-tab label="SALARY">
+            <app-salary-expense (salaryEvent)="updateBalance($event)"></app-salary-expense>
+        </mat-tab>
+        <mat-tab label="CASH WITHDRAWAL">
+            <app-cash-withdrawal (withdrawalEvent)="updateBalance($event)"></app-cash-withdrawal>
+        </mat-tab>
+    </mat-tab-group>
+</mat-card>

@@ -1,0 +1,80 @@
+<mat-card>
+    <app-page-loader *ngIf="showLoader"></app-page-loader>
+    <h1>Add Supplier:</h1>
+    <form [formGroup]="supplyerAddingForm">
+        <div class="row">
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Supplier Code</mat-label>
+                    <input formControlName="code" placeholder="Supplier Code" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Supplier regNo</mat-label>
+                    <input formControlName="regNo" placeholder="Supplier Number" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Company Name</mat-label>
+                    <input formControlName="companyName" placeholder="Company Name" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Shop Name</mat-label>
+                    <input formControlName="shopName" placeholder="Shop Name" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Brand Name</mat-label>
+                    <input formControlName="brandName" placeholder="Brand Name" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Supplier Website</mat-label>
+                    <input formControlName="website" placeholder="www.web.com" matInput>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-md-4">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Phone Number</mat-label>
+                <input [ngModelOptions]="{standalone: true}" [(ngModel)]="person.contactNo"
+                    (change)="searchClientByContactNo()" placeholder="017623*****" matInput>
+            </mat-form-field>
+        </div>
+
+        <div class="col-md-4">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Preson Name</mat-label>
+                <input [ngModelOptions]="{standalone: true}" [(ngModel)]="person.personName" placeholder="Person Name"
+                    matInput>
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Email</mat-label>
+                <input [ngModelOptions]="{standalone: true}" [(ngModel)]="person.email" placeholder="Person Name"
+                    matInput>
+            </mat-form-field>
+        </div>
+        <div class="col-md-12">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Person Address</mat-label>
+                <textarea type="text" pInputText [ngModelOptions]="{standalone: true}"
+                    [(ngModel)]="person.personAddress" matInput></textarea>
+            </mat-form-field>
+        </div>
+
+        <div class="col-md-12">
+            <button [disabled]="isSupplyerExist" (click)="addSupplyer()" mat-raised-button color="warn">Add
+                Supplier</button>
+        </div>
+    </div>
+</mat-card>

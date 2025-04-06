@@ -1,0 +1,407 @@
+<div class="container">
+    <mat-card class="posbody">
+        <h1>Create Sale Invoice:</h1>
+        <div class="row">
+            
+            <div class="col-md-12">
+                <hr>
+            </div>
+            <h3>
+                <mat-slide-toggle [(ngModel)]="isWalkingCustomer"
+                    (change)="customerTypeChnaged($event)">{{customerType}}</mat-slide-toggle>
+
+            </h3>
+            <!-- <div *ngIf="isWalkingCustomer" class="col-md-6">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Customer Name:</mat-label>
+                    <input [ngModelOptions]="{standalone:true}" [(ngModel)]="person.personName"
+                        placeholder="Customer Name" matInput>
+                </mat-form-field>
+            </div> -->
+        </div>
+        <div *ngIf="!isWalkingCustomer" class="row"><app-page-loader *ngIf="showLoader"></app-page-loader>
+            <h2 style="font-weight:bold;">
+                <mat-icon>face</mat-icon> CUSTOMER
+            </h2>
+            <br>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Mobile No:</mat-label>
+                    <input (change)="searchCustomer()" pInputText [ngModelOptions]="{standalone:true}" [disabled]="isEdit"
+                        [(ngModel)]="person.contactNo" placeholder="Contact No" matInput>
+                </mat-form-field>
+                <p style="margin-left: 10px;font-weight: bold;color: red;" *ngIf="isLengthError"> *Contact Number Must Be 11
+                    Character</p>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Customer Name:</mat-label>
+                    <input [ngModelOptions]="{standalone:true}" [(ngModel)]="person.personName" [disabled]="isCustomerExist"
+                        placeholder="Customer Name" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Shop Name:</mat-label>
+                    <input [ngModelOptions]="{standalone:true}" [(ngModel)]="customer.shopName" [disabled]="isCustomerExist"
+                        placeholder="Shop Name" matInput>
+                </mat-form-field>
+            </div>
+    
+            <div class="col-md-12">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Address:</mat-label>
+                    <textarea pInputText [ngModelOptions]="{standalone:true}" [disabled]="isCustomerExist"
+                        [(ngModel)]="person.personAddress" matInput></textarea>
+                </mat-form-field>
+            </div>
+            <div class="col-md-12">
+                <h2 style="font-weight:bold ;color:red">Balance: <span style="color:black">{{account.balance}} TAKA</span>
+                </h2>
+            </div>
+            <div class="col-md-12">
+                <button (click)="addCustomer()" mat-raised-button [disabled]="isCustomerExist || isLengthError"
+                    color="warn">Add
+                    Customer</button>
+            </div>
+            <p style="color:red;font-weight:bolder">{{errMsg}}</p>
+    </div>
+        
+</mat-card>
+<mat-card class="posbody mt-3">
+    <form [formGroup]="saleInvoiceIssueForm" (keydown.enter)="$event.preventDefault()">
+        <div class="row">
+            <div class="col-md-8 right-border">
+                <h2 style="font-weight:bold;;">
+                    <mat-icon>shopping_cart</mat-icon> ORDER
+                </h2>
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field class="input-field" appearance="outline">
+                            <mat-label>Code</mat-label>
+                            <!-- <input type="text" matInput [ngModelOptions]="{standalone:true}" [(ngModel)]="selectedProductCode" (change)="onCodeInput()" > -->
+                            <input type="text" matInput formControlName="productCode"
+                                (keyup)="onProductCodeInput($event)" [matAutocomplete]="autoCode">
+                            <mat-autocomplete (optionSelected)="productSelected($event)" #autoCode="matAutocomplete">
+                                <mat-option *ngFor="let product of filteredCodeOptions" [value]="product">
+                                    {{product.productCode}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-9">
+                        <mat-form-field class="input-field" appearance="outline">
+                            <mat-label>Select Product</mat-label>
+                            <input type="text" matInput formControlName="productName"
+                                (keyup)="onProductNameInput($event)" [matAutocomplete]="auto">
+                            <mat-autocomplete (optionSelected)="productSelected($event)" #auto="matAutocomplete">
+                                <mat-option *ngFor="let product of filteredOptions" [value]="product">
+                                    {{product.productName}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row" style="padding:0 5px ;">
+                            <div class="col-md-6">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Name</th>
+                                            <th> ({{orderItem.productCode}}) {{orderItem.productName}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Unit Type</th>
+                                            <th>{{orderItem.unitType}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Stock</th>
+                                            <th>{{orderItem.quantity - orderItem.quantitySold}}</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Price Rate</th>
+                                            <th>{{orderItem.pricePerUnit}} Taka</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Packaging Category</th>
+                                            <th>{{orderItem.packagingCategory}}</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Unit Per Package</th>
+                                            <th>{{orderItem.unitPerPackage}} {{orderItem.unitType}}</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-3">
+                            <mat-form-field class="input-field" appearance="outline">
+                                <mat-label>Package Quantity</mat-label>
+                                <input type="number" pInputText [ngModelOptions]="{standalone:true}" [disabled]="isEdit"
+                                    (change)="calculateQuantity()" [(ngModel)]="orderItem.packageQuantity"
+                                    placeholder="Quantity" matInput>
+                            </mat-form-field>
+                        </div> -->
+                    <div class="col-md-4">
+                        <mat-form-field class="input-field" appearance="outline">
+                            <mat-label>Quantity</mat-label>
+                            <input type="text" min="0" pInputText [ngModelOptions]="{standalone:true}"
+                                [disabled]="isEdit" (change)="calculateQuantity()" [(ngModel)]="orderItem.looseQuantity"
+                                placeholder="Quantity" matInput>
+                            <button matSuffix color="primary" mat-icon-button aria-label="add" (click)="addQuantity('add')">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                            <button matSuffix color="warn" mat-icon-button aria-label="remove" (click)="addQuantity('remove')">
+                                <mat-icon>remove</mat-icon>
+                            </button>
+                        </mat-form-field>
+                    </div>
+                    <!-- <div class="col-md-3">
+                            <mat-form-field class="input-field" appearance="outline">
+                                <mat-label>Total Quantity</mat-label>
+                                <input type="number" pInputText [ngModelOptions]="{standalone:true}" [disabled]="true"
+                                    (change)="calculateOrder()" [(ngModel)]="orderItem.quantityOrdered"
+                                    placeholder="Quantity" matInput>
+                            </mat-form-field>
+                        </div> -->
+                    <div class="col-md-8">
+                        <mat-form-field class="input-field" appearance="outline">
+                            <mat-label>Total Price (BDT)</mat-label>
+                            <input type="number" pInputText [ngModelOptions]="{standalone:true}" readonly="true"
+                                [(ngModel)]="orderItem.totalOrderPrice" placeholder="Selling Price" matInput>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-12">
+                        <h2 style="color: red;">{{stockMsg}}</h2>
+                        <div class="input-field">
+                            <button (click)="addOrder()" mat-raised-button color="warn">Add
+                                Order</button>
+                        </div>
+                        <hr class="mt-3">
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <table class="table table-striped" style="text-align:center ;">
+                            <thead>
+                                <tr>
+                                    <th>SN</th>
+                                    <th style="width:30% ;">Product Name</th>
+                                    <th>Rate</th>
+                                    <!-- <th>Package Quantity</th>
+                                        <th>Loose Quantity</th> -->
+                                    <th>Total Quantity</th>
+                                    <th>Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngIf="orderList.length==0">
+                                    <th colspan="8" style="font-weight:bold;text-align: center;">No Order Added Yet!
+                                    </th>
+                                </tr>
+                                <tr *ngFor="let order of orderList; index as i">
+                                    <th scope="row">{{i+1}}</th>
+                                    <th>{{order.productName}}</th>
+                                    <th>{{order.pricePerUnit}}</th>
+                                    <!-- <th>{{order.packageQuantity}}</th>
+                                        <th>{{order.looseQuantity}}</th> -->
+                                    <th>{{order.quantityOrdered}} {{order.unitType}}</th>
+                                    <th>{{order.totalOrderPrice}} BDT</th>
+                                    <th>
+                                        <button mat-icon-button color="warn" (click)="removeOrder(i)"
+                                            aria-label="Example icon button with a heart icon">
+                                            <mat-icon>close</mat-icon>
+                                        </button>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h2 style="font-weight:bold;">
+                    <mat-icon>assignment</mat-icon> Amount Details
+                </h2>
+                <table class="table table-striped" style="text-align:center ;">
+                    <tfoot style="font-weight:bolder;">
+                        <tr>
+                            <th style="text-align:left;">Total Bill:</th>
+                            <th style="text-align:right;font-size:18px;">{{totalPrice}} BDT</th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Previous {{balanceTitle}}:</th>
+                            <th style="text-align:right;font-size:18px;">{{showPositive(previousBalance)}} BDT</th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Discount:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field class="input-field" appearance="fill">
+                                    <input type="number" pInputText formControlName="rebate"
+                                        (change)="calculateSummary()" placeholder="Discount Amount" matInput>
+                                </mat-form-field>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Extra Charge:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field class="input-field" appearance="fill">
+                                    <input type="number" pInputText formControlName="extraCharge"
+                                        (change)="calculateSummary()" placeholder="Extra Charge" matInput>
+                                </mat-form-field>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Charge Reason:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field class="input-field" appearance="fill">
+                                    <input type="text" pInputText formControlName="chargeReason" placeholder="Reason"
+                                        matInput>
+                                </mat-form-field>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Total {{balanceType}}:</th>
+                            <th style="text-align:right;font-size:18px;">{{showPositive(totalPayableAmount)}} BDT</th>
+                        </tr>
+
+                        <tr>
+                            <th style="text-align:left;">Paid:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field class="input-field" appearance="fill">
+                                    <input style="text-align:right;" type="number" pInputText
+                                        formControlName="totalPaidAmount" placeholder="Amount" matInput>
+                                </mat-form-field>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">{{customerBalanceStatus}}:</th>
+                            <th style="text-align:right;font-size:18px;">{{showPositive(totalDueAmount)}} BDT</th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Payment Method:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field appearance="fill" class="input-field">
+                                    <mat-select formControlName="paymentMethod">
+                                        <mat-option *ngFor="let method of paymentMethods"
+                                            [value]="method.value">{{method?.label}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left;">Comment:</th>
+                            <th style="text-align:right;">
+                                <mat-form-field class="input-field" appearance="fill">
+                                    <mat-label>Comment:</mat-label>
+                                    <textarea type="text" pInputText [ngModelOptions]="{standalone:true}"
+                                        [(ngModel)]="comment" matInput>
+
+                                            </textarea>
+                                </mat-form-field>
+
+                            </th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th style="float: right;margin-right: 0;">
+                                <button (click)="submitOrder()" mat-raised-button color="warn">Submit</button>
+                            </th>
+                        </tr>
+
+                        <!-- experimental  -->
+
+                        <!-- <tr>
+                                <th></th>
+                                <th style="float: right;margin-right: 0;">
+                                    <button (click)="printReport()" mat-raised-button color="warn">Print Report</button>
+                                </th>
+                            </tr> -->
+
+                        <!-- experimental  -->
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </form>
+</mat-card>
+<app-printable-receipt [receiptModel]="receiptModel" #receiptComponent></app-printable-receipt>
+</div>
+<!-- The Modal -->
+<!-- <div class="modal" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <div class="modal-header">
+          <h4 class="modal-title">Receipt</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <div class="modal-body">
+            <div id="printable" class="receipt-body">
+                <div class="receipt-container print-section">
+                    <h2>{{shopName}}</h2>
+                    <p style="font-size:.8em;text-align: center;">{{shopAddress}}<br>Tel: {{shopContactNo}}</p>
+                    <div class="receipt-info">
+                        <p style="font-size: .8 em ;font-weight:400;">Invoice NO: {{receiptModel.invoiceNo}}</p>
+                        <p style="font-size:1em ;">{{tnxDate}}</p>
+                    </div>
+                    <div class="customer-info">
+                        <p>Name:  {{receiptModel.customerName}}</p>
+                        <p>Mob:  {{receiptModel.cutomerContact}}</p>
+                    </div>
+                    <div class="receipt-items">
+                        <table>
+                            <tr class="tbl-h">
+                                <th class="tbl-th">Items</th>
+                                <th class="tbl-th">Rate</th>
+                                <th style="text-align:right;" class="tbl-th">Total</th>
+                            </tr>
+                            <tr *ngFor="let order of receiptModel.orders;index as i">
+                                <td style="width: 40%;text-align: left;">{{order.item}}</td>
+                                <td>{{order.rate}} X {{order.qty}}</td>
+                                <td style="text-align:right;">{{order.total}}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="border-bottom: 1px solid black;"></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left;" colspan="2">Subtotal</td>
+                                <td style="text-align:right;" colspan="2">{{receiptModel.subTotal}}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left;" colspan="2">Tax</td>
+                                <td style="text-align:right;" colspan="2">{{receiptModel.tax}}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left;" colspan="2">Discount</td>
+                                <td style="text-align:right;" colspan="2">{{receiptModel.discount}}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left;" colspan="2">Total</td>
+                                <td style="text-align:right;" colspan="2">{{receiptModel.total}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="receipt-footer">
+                        <p style="font-size: .8em ;text-align: center;">Issued By: {{receiptModel.issuedBy}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+  
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="printReport()">Print</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+  
+      </div>
+    </div>
+  </div> -->

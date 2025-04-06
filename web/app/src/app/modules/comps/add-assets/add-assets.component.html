@@ -1,0 +1,45 @@
+<mat-card>
+    <app-page-loader *ngIf="showLoader"></app-page-loader>
+    <h1>Add Assets:</h1>
+    <form [formGroup]="assetAddingForm">
+        <div class="row">
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Assets Name</mat-label>
+                    <input formControlName="assetName" placeholder="Asset Name" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Buying Date</mat-label>
+                    <input matInput [matDatepicker]="buyingDatePicker" formControlName="purchaseDate">
+                    <mat-datepicker-toggle matSuffix [for]="buyingDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #buyingDatePicker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Buying Price</mat-label>
+                    <input formControlName="buyingPrice" placeholder="Buying Price" matInput>
+                </mat-form-field>
+            </div>
+            <!-- <div class="col-md-3">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Present Value</mat-label>
+                    <input formControlName="presentValue" placeholder="Present Value" matInput>
+                </mat-form-field>
+            </div> -->
+            <div class="col-md-12">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Description</mat-label>
+                    <textarea type="text" pInputText [ngModelOptions]="{standalone:true}" [(ngModel)]="description"
+                        matInput></textarea>
+                </mat-form-field>
+            </div>
+            <div class="col-md-12">
+                <button (click)="addAsset()" mat-raised-button color="warn">Add Asset</button>
+            </div>
+        </div>
+    </form>
+
+</mat-card>

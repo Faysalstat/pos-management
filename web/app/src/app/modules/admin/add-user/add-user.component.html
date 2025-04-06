@@ -1,0 +1,83 @@
+<app-page-loader *ngIf="showLoader"></app-page-loader>
+<mat-card>
+    <h2>Add User</h2>
+    <form [formGroup]="userForm">
+        <div class="row">
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline" >
+                    <mat-label>Contact No:</mat-label>
+                    <input   (change)="searchCustomer()" pInputText formControlName="contactNo" placeholder="Contact No." matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Persons Name :</mat-label>
+                    <input  formControlName="personName" placeholder="Persons Name" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Email :</mat-label>
+                    <input  formControlName="email" placeholder="Customer Email" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-6">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Address:</mat-label>
+                    <textarea type="text"  pInputText formControlName="personAddress" matInput></textarea>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <h2>User Login Information</h2>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Login ID (username / Email) :</mat-label>
+                    <input (change)="checkUser()"  formControlName="userName" placeholder="User Name" matInput>
+                    <!-- <div *ngIf="isExist" style="color:crimson;">
+                        {{message}}
+                    </div> -->
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Password:</mat-label>
+                    <input type="password" formControlName="password" placeholder="password" matInput>
+                </mat-form-field>
+            </div>
+                <div class="col-md-4">
+                    <mat-form-field appearance="outline" class="input-field">
+                        <mat-label>User Role</mat-label>
+                        <mat-select formControlName = "userRole">
+                            <mat-option *ngFor="let role of roles" [value]="role.roleName">{{role.roleName}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+        </div>
+        <button type="submit" (click)="submit()"  mat-raised-button color="primary">Add User</button>
+        <p style="color: crimson;font-size:medium;margin-top:10px;">{{message}}</p>
+    </form>
+</mat-card>
+<mat-card class="mt-3">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>User Name</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of userList; index as i">
+                        <td>{{i+1}}</td>
+                        <td>{{user.userName}}</td>
+                        <td>{{user.userRole}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</mat-card>

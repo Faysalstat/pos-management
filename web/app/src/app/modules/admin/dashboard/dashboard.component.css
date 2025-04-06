@@ -1,0 +1,16 @@
+.box{
+    width: 100%;
+    height: 80px;
+    color: white;
+    font-size: 1.2em;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+.c-hr{
+    margin: 3px;
+    background-color: white;
+}
+
+.sum-box{
+    background-color: #d6d6d6;
+}

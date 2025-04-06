@@ -1,0 +1,11 @@
+.posbody{
+    font-size: 12px;
+}
+tr, th{
+    padding: 3px;
+    margin:2px
+}
+
+.right-border{
+    border-right: 2px solid black ;
+}

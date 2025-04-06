@@ -1,0 +1,61 @@
+<app-page-loader *ngIf="showLoader"></app-page-loader>
+<mat-card>
+    <form [formGroup]="clientForm">
+        <div class="row">
+            <h2 style="font-weight:bold;">
+                <mat-icon>face</mat-icon> Loan Acc Info:
+            </h2>
+            <div class="col-md-12">
+                <hr>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Client Name:</mat-label>
+                    <input (change)="searchLoanAcc()" pInputText [ngModelOptions]="{standalone:true}" [disabled]="isEdit"
+                        [(ngModel)]="loanAcc.clientName" placeholder="Client Name" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-8">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Client Disc:</mat-label>
+                    <input [ngModelOptions]="{standalone:true}" [(ngModel)]="loanAcc.clientDisc"
+                        placeholder="Client Disc" matInput>
+                </mat-form-field>
+            </div>
+            
+            <div class="col-md-12">
+                <h2 style="font-weight:bold ;color:red">Balance: <span style="color:black">{{account.balance}} TAKA</span>
+                </h2>
+            </div>
+            <div class="col-md-12">
+                <button (click)="addClient()" mat-raised-button [disabled]="false" color="warn">Add
+                    Loan Client</button>
+            </div>
+            <p style="color:red;font-weight:bolder">{{errMsg}}</p>
+        </div>
+    </form>
+</mat-card>
+<mat-card class="mt-3">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped" style="text-align:center ;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Client Name</th>
+                        <th>Client Disc</th>
+                        <!-- <th>Balance</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="row-hover" *ngFor="let client of clientList; index as i">
+                        <td>{{i+1}}</td>
+                        <td>{{client.clientName}}</td>
+                        <td>{{client.clientDisc}}</td>
+                        <!-- <td>{{client.account?.balance}}</td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</mat-card>

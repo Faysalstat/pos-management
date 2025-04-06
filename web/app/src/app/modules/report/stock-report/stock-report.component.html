@@ -1,0 +1,88 @@
+<mat-card>
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <h2>Product Stock:</h2>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Brand Name</mat-label>
+                <input placeholder="Brand Name" pInputText (change)="fetchAllProducts()" [ngModelOptions]="{standalone:true}"
+                  [(ngModel)]="brandName" matInput>
+              </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field appearance="outline" class="input-field">
+                <mat-label>Product Category</mat-label>
+                <mat-select (selectionChange)="fetchAllProducts()" [ngModelOptions]="{standalone:true}"
+                [(ngModel)]="categoryName">
+                    <mat-option *ngFor="let cat of categories" [value]="cat.value">{{cat?.label}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Product Code</mat-label>
+                <input placeholder="Product Code" pInputText (change)="fetchAllProducts()" [ngModelOptions]="{standalone:true}"
+                  [(ngModel)]="code" matInput>
+              </mat-form-field>
+        </div>
+        <div class="col-md-2">
+            <button mat-raised-button (click)="refreshFilter()" color="warn">
+                <mat-icon>refresh</mat-icon>Refresh
+            </button>
+        </div>
+        <div class="col-md-2">
+            <button (click)="export()" mat-raised-button
+              color="warn"> <mat-icon>output</mat-icon> Export</button>
+        </div>
+    </div>
+    <div class=" row">
+        <div class="col-md-12">
+            <hr>
+            <table class="table" style="height:600px;overflow-x: auto;">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Code</th>
+                        <th>Product Name</th>
+                        <th>Brand Name</th>
+                        <th>Package Qnt</th>
+                        <th>Quantity</th>
+                        <th>Buying Price</th>
+                        <th>Selliing Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let product of productList; index as i" >
+                        <td scope="row">{{i+offset+1}}</td>
+                        <td>{{product?.productCode}}</td>
+                        <td>{{product?.productName}}</td>
+                        <td>{{product?.brandName}}</td>
+                        <td>{{packProduct(product)}}</td>
+                        <td>{{(product?.quantity - product?.quantitySold)||0}} {{product?.unitType}}</td>
+                        <td>{{product?.costPricePerUnit || 0}} BDT</td>
+                        <td>{{product?.sellingPricePerUnit || 0}} BDT</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-12">
+            <div style="float:right ;font-size: 16px;">
+                <mat-paginator [length]="length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                    (page)="pageChange($event)" aria-label="Select page">
+                </mat-paginator>
+            </div>
+        </div>
+    </div>
+</mat-card>
+<mat-card>
+    <h1>Summary</h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Total Cost Value: <span>{{totalCostValue|| 0}} BDT</span></h3>
+            <h3>Total Sell Value: <span>{{totalSellValue|| 0}} BDT</span></h3>
+        </div>
+    </div>
+</mat-card>

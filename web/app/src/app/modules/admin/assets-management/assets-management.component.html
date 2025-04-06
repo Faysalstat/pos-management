@@ -1,0 +1,47 @@
+<app-page-loader *ngIf="showLoader"></app-page-loader>
+<mat-card>
+    <!-- <div class="row">
+        <div class="col-md-4">
+            <mat-form-field appearance="outline" class="input-field">
+                <mat-label>Client Type</mat-label>
+                <mat-select (selectionChange)="onTypeChange()" [ngModelOptions]="{standalone:true}"
+                    [(ngModel)]="selectedType">
+                    <mat-option *ngFor="let client of clientTypes" [value]="client.value">{{client?.label}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div> -->
+    <h1>Assets:</h1>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped" style="text-align:center ;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Asset Name</th>
+                        <th>Quantity</th>
+                        <th>Buying Value</th>
+                        <th>Present Value</th>
+                        <th>Purchase Date</th>
+                        <th>Description</th>
+                        <!-- <th>Status</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="row-hover" *ngFor="let asset of assetsList; index as i">
+                        <td>{{i+1}}</td>
+                        <td>{{asset?.assetName}}</td>
+                        <td>{{asset?.quantity}}</td>
+                        <td>{{asset?.buyingPrice}}</td>
+                        <td>{{asset?.presentValue}}</td>
+                        <td>{{asset?.purchaseDate}}</td>
+                        <td>{{asset?.discription}}</td>
+                        <!-- <td>{{asset?.status }}</td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</mat-card>

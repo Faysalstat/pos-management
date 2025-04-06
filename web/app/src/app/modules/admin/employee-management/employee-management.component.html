@@ -1,0 +1,73 @@
+
+<app-page-loader *ngIf="showLoader"></app-page-loader>
+<mat-card class="mt-5">
+        <h2>Employee List:</h2>
+        <hr>
+        <div class="row">
+            <div class="col-md-2">
+                <mat-form-field class="input-field" appearance="outline">
+                  <mat-label>Contact No</mat-label>
+                  <input pInputText [ngModelOptions]="{standalone:true}" (change)="fetchClientList()" [(ngModel)]="queryBody.contactNo"
+                    placeholder="Contact" matInput>
+                </mat-form-field>
+              </div>
+              <div class="col-md-2">
+                <mat-form-field class="input-field" appearance="outline">
+                  <mat-label>Employee ID</mat-label>
+                  <input placeholder="Employee ID" pInputText (change)="fetchClientList()" [ngModelOptions]="{standalone:true}"
+                    [(ngModel)]="queryBody.employeeId" matInput>
+                </mat-form-field>
+              </div>
+            <div class="col-md-2">
+              <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Designation</mat-label>
+                <input placeholder="Designation" pInputText (change)="fetchClientList()" [ngModelOptions]="{standalone:true}"
+                  [(ngModel)]="queryBody.designation" matInput>
+              </mat-form-field>
+            </div>
+            <div class="col-md-2">
+                <mat-form-field class="input-field" appearance="outline">
+                  <mat-label>Role</mat-label>
+                  <input placeholder="Role" pInputText (change)="fetchClientList()" [ngModelOptions]="{standalone:true}"
+                    [(ngModel)]="queryBody.role" matInput>
+                </mat-form-field>
+              </div>
+            <div class="col-md-2">
+              <button style="margin-top:10px ;" mat-raised-button color="warn"  (click)="refresh()" >
+                Refresh
+                <mat-icon>refresh</mat-icon>
+              </button>
+            </div>
+            <div class="col-md-2">
+              <button style="margin: 10px; float: left;" (click)="export()" mat-raised-button
+                color="warn"> <mat-icon>output</mat-icon> Export</button>
+            </div>
+          </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped" style="text-align:left ;">
+                    <thead>
+                        <tr>
+                            <th>SN</th>
+                            <th>ID</th>
+                            <th>Employee Name</th>
+                            <th>Contact No.</th>
+                            <th>Designation</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-hover" *ngFor="let client of clientList; index as i"
+                            (click)="viewClient(client.person.id)">
+                            <td>{{i+1}}</td>
+                            <td  style="text-align: left;">{{client.employeeId}}</td>
+                            <td  style="text-align: left;">{{client.person.personName}}</td>
+                            <td>{{client.person.contactNo}}</td>
+                            <td  style="text-align: left;">{{client.designation}}</td>
+                            <td  style="text-align: left;">{{client.role}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+</mat-card>

@@ -1,0 +1,44 @@
+<app-page-loader *ngIf="showLoader"></app-page-loader>
+<mat-card>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Profit Calculator</h2>
+            <hr>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field appearance="outline">
+                <mat-label>From Date</mat-label>
+                <input matInput [matDatepicker]="fromDatePicker" (dateInput)="fetchProfitCalculationData()"
+                    [ngModelOptions]="{standalone:true}" [(ngModel)]="queryBody.fromDate">
+                <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #fromDatePicker></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field appearance="outline">
+                <mat-label>To Date</mat-label>
+                <input matInput [matDatepicker]="toDatePicker" (dateInput)="fetchProfitCalculationData()"
+                    [ngModelOptions]="{standalone:true}" [(ngModel)]="queryBody.toDate">
+                <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #toDatePicker></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Total Income: <span>{{totalIncome.toFixed(2)}} BDT</span></h2>
+        </div>
+        <div class="col-md-4">
+            <h2>Total Expense: <span>{{totalExpense.toFixed(2)}} BDT</span></h2>
+        </div>
+        <div class="col-md-4">
+            <h2>Total Extra Charge: <span>{{totalExtraCharge.toFixed(2)}} BDT</span></h2>
+        </div>
+        <div class="col-md-12">
+            <h4>Profit = total Income from Sale + Total Extra Charge - Total Expense</h4>
+        </div>
+        <div class="col-md-12">
+            <h2>Profit = {{(totalIncome + totalExtraCharge - totalExpense).toFixed(2)}} BDT</h2>
+        </div>
+    </div>
+</mat-card>

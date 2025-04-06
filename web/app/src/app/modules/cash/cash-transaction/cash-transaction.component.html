@@ -1,0 +1,157 @@
+
+<mat-card>
+    <h2>Cash Payments</h2>
+    <app-page-loader *ngIf="showLoader"></app-page-loader>
+    <form [formGroup]="cashTransactionForm" (keydown.enter)="$event.preventDefault()">
+        <div class="row">
+            <!-- <div class="col-md-4">
+                <mat-form-field appearance="outline" class="input-field">
+                    <mat-label>Transaction Type</mat-label>
+                    <mat-select formControlName="transactionType">
+                        <mat-option *ngFor="let type of types" [value]="type.value">{{type?.label}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+            <div class="col-md-4">
+                <mat-form-field appearance="outline" class="input-field">
+                    <mat-label>Client Type</mat-label>
+                    <mat-select (selectionChange)="onClientTypeChange()" [ngModelOptions]="{standalone:true}" [(ngModel)]="selectedType">
+                        <mat-option value="SUPPLIER">Supplier</mat-option>
+                        <mat-option value="CUSTOMER">Customer</mat-option>
+                        <mat-option value="OTHER">Other</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div *ngIf="isCustomer" class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline" >
+                    <mat-label>Contact No:</mat-label>
+                    <input   (change)="searchCustomer()" pInputText [ngModelOptions]="{standalone:true}" [(ngModel)]="contactNo" placeholder="Contact No." matInput>
+                </mat-form-field>
+            </div>
+            <div *ngIf="isSupplier" class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline" >
+                    <mat-label>Code:</mat-label>
+                    <input   (change)="searchCustomer()" pInputText [ngModelOptions]="{standalone:true}" [(ngModel)]="code" placeholder="Code" matInput>
+                </mat-form-field>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Tnx Date</mat-label>
+                    <input matInput [matDatepicker]="tnxDatePicker"
+                        [ngModelOptions]="{standalone:true}" [(ngModel)]="transactionDate">
+                    <mat-datepicker-toggle matSuffix [for]="tnxDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #tnxDatePicker></mat-datepicker>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div *ngIf="isClientFound" class="col-md-6">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>{{isCustomer?"Customer Name":"Supplier Name"}}</th>
+                            <td>{{person.personName}}</td>
+                        </tr>
+                        <tr>
+                            <th>Contact No:</th>
+                            <td>{{person.contactNo}}</td>
+                        </tr>
+                        <tr>
+                            <th>Address:</th>
+                            <td>{{person.personAddress}}</td>
+                        </tr>
+                        <tr>
+                            <th>Balance:</th>
+                            <td style="font-weight:bolder;">{{account.balance}} BDT</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div *ngIf="isClientFound" class="col-md-6">
+                <table class="table">
+                    <tbody *ngIf="isSupplier">
+                        <tr>
+                            <th>Code</th>
+                            <td>{{supplier.code}}</td>
+                        </tr>
+                        <tr>
+                            <th>Reg. No.</th>
+                            <td>{{supplier.regNo}}</td>
+                        </tr>
+                        <tr>
+                            <th>Company Name</th>
+                            <td>{{supplier.companyName}}</td>
+                        </tr>
+                        <tr>
+                            <th>Brand Name</th>
+                            <td>{{supplier.brand}}</td>
+                        </tr>
+                    </tbody>
+
+                    <tbody *ngIf="isCustomer">
+                        <tr>
+                            <th>Shop Name</th>
+                            <td>{{customer.shopName}}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{person.email}}</td>
+                        </tr>
+                        <tr>
+                            <th>Shop Address</th>
+                            <td>{{customer.shopAddress}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div *ngIf="isClientFound" class="row">            
+            <div  class="col-md-4">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Amount:</mat-label>
+                    <input formControlName="cashAmount" placeholder="Put Amount" matInput>
+                </mat-form-field>
+            </div>
+            <div  class="col-md-2">
+                <mat-slide-toggle color="primary" formControlName="isReturn" (change)="onChangeIsReturn($event)">
+                    <ng-container *ngIf="isReturn; else doreturn">
+                        {{isCustomer?"Cash Payment":"Cash Receive"}}
+                    </ng-container>
+                    <ng-template #doreturn>
+                        {{isCustomer?"Cash Receive":"Cash Payment"}}
+                    </ng-template>
+                </mat-slide-toggle>
+            </div>
+            <div  class="col-md-3">
+                <mat-form-field appearance="outline" class="input-field">
+                    <mat-label>Tnx Reason:</mat-label>
+                    <mat-select formControlName="transactionReason">
+                        <mat-option *ngFor="let reason of transactionReasons" [value]="reason.value">{{reason?.label}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div  class="col-md-3">
+                <mat-form-field appearance="outline" class="input-field">
+                    <mat-label>Payment By:</mat-label>
+                    <mat-select formControlName="paymentMethod">
+                        <mat-option *ngFor="let method of paymentMethods" [value]="method.value">{{method?.label}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div  class="col-md-8">
+                <mat-form-field class="input-field" appearance="outline">
+                    <mat-label>Comment:</mat-label>
+                    <textarea type="text" pInputText [ngModelOptions]="{standalone:true}"
+                        [(ngModel)]="comment" matInput>
+                    </textarea>
+                </mat-form-field>
+            </div>
+            <div  class="col-md-4">
+                <button style="float:right ;" (click)="submitTransaction()" mat-raised-button color="warn">Submit</button>
+            </div>
+        </div>
+    </form>
+</mat-card>

@@ -1,0 +1,175 @@
+<mat-card>
+    <app-page-loader *ngIf="showLoader"></app-page-loader>
+    <div class="row">
+        <h2 *ngIf="isStock">Supply Order Details  <span style="font-weight: bold;float:right;">Task ID: {{taskId}}</span></h2>
+        <h2 *ngIf="!isStock">Sale Order Details  <span style="font-weight: bold;float:right;">Task ID: {{taskId}}</span></h2>
+        <div class="col-md-12"><hr></div>
+        <div class="col-md-6" style="overflow-x:auto;">
+            <table class="table" style="text-align:left ;">
+                <thead *ngIf="isStock">
+                    <tr>
+                        <th>Code:</th>
+                        <td> {{supplyer?.code}} </td>
+                    </tr>
+                    <tr>
+                        <th>Company Name:</th>
+                        <td> {{supplyer?.companyName}} </td>
+                    </tr>
+                    <tr>
+                        <th>Brand Name:</th>
+                        <td> {{supplyer?.brand}}</td>
+                    </tr>
+                    <tr>
+                        <th>Supplyer Name:</th>
+                        <td> {{supplyer?.person?.personName}} </td>
+                    </tr>
+                    <tr>
+                        <th>Contact No:</th>
+                        <td> {{supplyer?.person?.contactNo}} </td>
+                    </tr>
+                    <tr>
+                        <th>Issued By:</th>
+                        <td> {{invoiceDetails?.issuedBy}} </td>
+                    </tr>
+                </thead>
+                <thead *ngIf="!isStock">
+                    <tr>
+                        <th>Customer Name:</th>
+                        <td> {{customer?.person?.personName}} </td>
+                    </tr>
+                    <tr>
+                        <th>Shop Name:</th>
+                        <td> {{customer?.shopName}}</td>
+                    </tr>
+                    <tr>
+                        <th>Contact No:</th>
+                        <td> {{customer?.person?.contactNo}} </td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td> {{customer?.person?.email}} </td>
+                    </tr>
+                    <tr>
+                        <th>Address:</th>
+                        <td> {{customer?.person?.personAddress}} </td>
+                    </tr>
+                    <tr>
+                        <th>Issued By:</th>
+                        <td> {{invoiceDetails?.issuedBy}} </td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div *ngIf="isStock" class="col-md-6">
+            <table class="table">
+                <thead>
+                    <tr style="background-color:#7498fc;">
+                        <th>Total Bill:</th>
+                        <td style="text-align:right;font-weight: bold;"> {{invoiceDetails?.totalPrice || 0}} BDT</td>
+                    </tr>
+                    <tr>
+                        <th>Discount:</th>
+                        <td style="text-align:right;font-weight: bold;"> {{invoiceDetails?.rebate || 0}} BDT</td>
+                    </tr>
+                    <tr>
+                        <th>Balance:</th>
+                        <td style="text-align:right;font-weight: bold;">{{supplyer?.account?.balance || 0}} BDT</td>
+                    </tr>
+                    <tr *ngIf="isDue">
+                        <th>Due :</th>
+                        <td style="text-align:right;font-weight: bold;">{{ dueAmount || 0}} BDT</td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div *ngIf="!isStock" class="col-md-6">
+            <table class="table" style="text-align:right ;">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">Total Bill:</th>
+                        <td style="text-align:right;font-weight: bold;">{{invoiceDetails?.totalPrice || 0}} BDT</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align:left;">Previous Balance:</th>
+                        <td style="text-align:right;font-weight: bold;"> {{invoiceDetails?.previousBalance || 0}} BDT</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align:left;">Extra Charge: ({{invoiceDetails?.chargeReason}})</th>
+                        <td style="text-align:right;font-weight: bold;"> {{invoiceDetails?.extraCharge || 0}} BDT</td>
+                    </tr>
+                    <!-- <tr>
+                        <th style="text-align:left;">Charge Reason:</th>
+                        <td style="text-align:right;"> </td>
+                    </tr> -->
+                    <tr>
+                        <th style="text-align:left;">Discount:</th>
+                        <td style="text-align:right;font-weight: bold;"> {{invoiceDetails?.rebate || 0}} BDT</td>
+                    </tr>
+                    <tr style="background-color:#7498fc;">
+                        <th style="text-align:left;">Total Payable Bill:</th>
+                        <td style="text-align:right;font-weight: bold;"> {{invoiceDetails?.totalPayableAmount || 0}} BDT</td>
+                    </tr>
+                    <tr style="background-color:#7498fc;">
+                        <th style="text-align:left;">Total Paid:</th>
+                        <td style="text-align:right;font-weight: bold;"> {{invoiceDetails?.totalPaidAmount || 0}} BDT</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align:left;">Due:</th>
+                        <td style="text-align:right;font-weight: bold;"> {{invoiceDetails?.duePayment || 0}} BDT</td>
+                    </tr>
+                    
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <h2>Order Details</h2>
+        
+        <div class="col-md-12">
+            <hr>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Product Name</th>
+                        <th>Rate</th>
+                        <th>Package</th>
+                        <th>Loose</th>
+                        <th>Total Quantity</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let order of invoiceDetails?.orders; index as i">
+                        <th scope="row">{{i+1}}</th>
+                        <th>{{order.productName}}</th>
+                        <th>{{order.pricePerUnit}}</th>
+                        <th>{{order.packageQuantity}}</th>
+                        <th>{{order.looseQuantity}}</th>
+                        <th>{{order.quantityOrdered}}</th>
+                        <th>{{order.totalOrderPrice || 0}} BDT</th>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="5"></th>
+                        <th>Total</th>
+                        <th>{{invoiceDetails?.totalPrice || 0}} BDT</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="col-md-12">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Comment:</mat-label>
+                <textarea type="text" pInputText [ngModelOptions]="{standalone:true}"
+                    [(ngModel)]="comment" matInput></textarea>
+            </mat-form-field>
+        </div>
+        <div class="col-md-12">
+            <button style="float:right ; margin-left: 10px;" (click)="declineApproval()" mat-raised-button color="warn">Decline</button>
+            <!-- <button style="float:right ; margin-left: 10px;" (click)="declineApproval()" mat-raised-button color="warn">Decline</button> -->
+            <button style="float:right ;" (click)="submitOrder()" [disabled]="showLoader" mat-raised-button color="primary">Submit</button>
+        </div>
+    </div>
+</mat-card>

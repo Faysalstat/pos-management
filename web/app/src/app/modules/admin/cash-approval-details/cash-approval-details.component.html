@@ -1,0 +1,72 @@
+<mat-card>
+    <h2>Transaction Details: <span style="font-weight: bold;float:right;">Task ID: {{taskId}}</span></h2>
+    <hr>
+    <app-page-loader *ngIf="showLoader"></app-page-loader>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Transaction Type</th>
+                        <td>{{taskDetail?.transactionType}}</td>
+                    </tr>
+                    <tr>
+                        <th>{{(taskDetail?.transactionType=='RECEIVE')?"Receive From":"Pay To"}}</th>
+                        <td>{{taskDetail?.person?.personName || "X"}}</td>
+                    </tr>
+                    <tr>
+                        <th>Client Type</th>
+                        <td>{{taskDetail?.clientType || "X"}}</td>
+                    </tr>
+                    <tr>
+                        <th>Client Name</th>
+                        <td>{{taskDetail?.clientName || "X"}}</td>
+                    </tr>
+                    <tr>
+                        <th>Issued By</th>
+                        <td>{{taskDetail?.issuedBy}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-6">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Present Balance</th>
+                        <th>{{taskDetail?.account?.balance || 0}} BDT</th>
+                    </tr>
+                    <tr>
+                        <th>Tnx Amount</th>
+                        <th>{{taskDetail?.cashAmount}} BDT</th>
+                    </tr>
+                    <tr>
+                        <th>Updated Balance</th>
+                        <th>{{updatedBalance}} BDT</th>
+                    </tr>
+                    <tr>
+                        <th>Transaction Reason</th>
+                        <td>{{taskDetail?.transactionReason}}</td>
+                    </tr>
+                    <tr>
+                        <th>Pament Method</th>
+                        <td>{{taskDetail?.paymentMethod}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-12">
+            <mat-form-field class="input-field" appearance="outline">
+                <mat-label>Comment:</mat-label>
+                <textarea type="text" pInputText [ngModelOptions]="{standalone:true}" [(ngModel)]="comment"
+                    matInput></textarea>
+            </mat-form-field>
+        </div>
+        <div class="col-md-12 mt-2">
+            <button style="float:right ; margin-left: 10px;" (click)="declineApproval()" mat-raised-button color="warn">Decline</button>
+            <!-- <button style="float:right ; margin-left: 10px;" (click)="declineApproval()" mat-raised-button color="warn">Decline</button> -->
+            <button style="float:right ;" (click)="approveTransaction()" mat-raised-button color="primary">Submit</button>
+        </div>
+    </div>
+</mat-card>

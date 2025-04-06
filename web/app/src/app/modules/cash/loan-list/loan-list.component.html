@@ -1,0 +1,44 @@
+<mat-card>
+    <div class="row">
+        <h2>Loan List</h2>
+        <hr>
+        <div class="col-md-12 overflow-auto mt-3">
+            <table class="table table-stripe mt-4 ">
+                <thead>
+                    <th style="width:5%;">SN</th>
+                    <th style="width:10%;">Client Name</th>
+                    <th style="width:20%;">Loan Amount</th>
+                    <th style="width:20%;">Available Amount</th>
+                    <th style="width:20%;">Receive Date</th>
+                    <th style="width:10%;">Return Date</th>
+                    <th style="width:10%;">Comment</th>
+                </thead>
+                <tbody>
+                    <tr *ngIf="loanList.length==0">
+                        <td colspan="7" style="font-weight:bold ; ">
+                            No Loan Found!!
+                        </td>
+                    </tr>
+                    <tr class="row-hover" *ngFor="let loan of loanList; index as i" (click)="viewDetails(loan.id)">
+                        <td>{{i+1}}</td>
+                        <td>{{loan?.loanClient?.clientName}}</td>
+                        <td>{{loan?.loanAmmount}}</td>
+                        <td>{{loan?.account?.balance}}</td>
+                        <td>{{loan?.receiveDate}}</td>
+                        <td>{{loan?.returnDate}}</td>
+                        <!-- <td>{{loan?.interestRate}}</td> -->
+                        <td>{{loan?.remark}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- <div class="col-md-6"></div>
+        <div class="col-md-6">
+            <div style="float:right ;font-size: 16px;">
+                <mat-paginator [length]="length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                    (page)="pageChange($event)" aria-label="Select page">
+                </mat-paginator>
+            </div>
+        </div> -->
+    </div>
+</mat-card>

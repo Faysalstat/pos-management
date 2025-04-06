@@ -1,0 +1,123 @@
+<mat-card>
+    <h2>Dashboard</h2>
+    <hr>
+    <div class="row">
+        <div class="col-md-3">
+            <button class="box" mat-raised-button color="accent">Cash In Hand <br>
+                <hr class="c-hr"> {{cashGlBalance?.toFixed(2) || 0}} BDT
+            </button>
+            <br>
+            <hr>
+            <button class="box" mat-raised-button color="primary">Asset Balance <br>
+                <hr class="c-hr"> {{assetBalance?.toFixed(2) || 0}} BDT
+            </button>
+        </div>
+
+        <div class="col-md-3">
+            <button class="box" mat-raised-button color="warn">Todays Discount Given <br>
+                <hr class="c-hr"> {{dashboardSummary?.todaysDiscountGiven?.toFixed(2) || 0}} BDT
+            </button>
+            <br>
+            <hr>
+            <button class="box" mat-raised-button color="accent">Total Discount Given <br>
+                <hr class="c-hr"> {{dashboardSummary?.totalDiscountGiven?.toFixed(2) || 0}} BDT
+            </button>
+        </div>
+        <div class="col-md-3">
+            <button class="box" mat-raised-button color="primary">Todays Discount Received<br>
+                <hr class="c-hr"> {{dashboardSummary?.supplySumamry?.todaysDiscount?.toFixed(2) || 0}} BDT
+            </button>
+            <br>
+            <hr>
+            <button class="box" mat-raised-button color="warn">Total Discount Received<br>
+                <hr class="c-hr"> {{dashboardSummary?.supplySumamry?.totalDiscountReceived?.toFixed(2) || 0}} BDT
+            </button>
+        </div>
+        <div class="col-md-3">
+            <button class="box" mat-raised-button color="accent">Todays Extra Charge<br>
+                <hr class="c-hr"> {{dashboardSummary?.todaysExtraCharge?.toFixed(2) || 0}} BDT
+            </button>
+            <br>
+            <hr>
+            <button class="box" mat-raised-button color="primary">Total Extra Charge<br>
+                <hr class="c-hr"> {{dashboardSummary?.totalExtraCharge?.toFixed(2) || 0}} BDT
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <mat-card class="sum-box mt-2">
+                <h4>Todays Sale</h4>
+                <h2>{{dashboardSummary?.todaysTotalSale?.toFixed(2) || 0}} BDT</h2>
+                <hr>
+                <h4>Total Sale</h4>
+                <h2>{{dashboardSummary?.totalSale?.toFixed(2)|| 0}} BDT</h2>
+            </mat-card>
+        </div>
+        <div class="col-md-3">
+            <mat-card class="sum-box mt-2">
+                <h4>Todays Purchase</h4>
+                <h2>{{dashboardSummary?.todaysTotalPurchase?.toFixed(2) || 0}} BDT</h2>
+                <hr>
+                <h4>Total Purchase</h4>
+                <h2>{{dashboardSummary?.totalPurchase?.toFixed(2) || 0}} BDT</h2>
+            </mat-card>
+        </div>
+        <div class="col-md-3">
+            <mat-card class="sum-box mt-2">
+                <h4>Todays Expense</h4>
+                <h2>{{dashboardSummary?.todaysExpense?.toFixed(2) || 0}} BDT</h2>
+                <hr>
+                <h4>Total Expense</h4>
+                <h2>{{dashboardSummary?.totalExpense?.toFixed(2)|| 0}} BDT</h2>
+            </mat-card>
+        </div>
+        <div class="col-md-3">
+            <mat-card class="sum-box mt-2">
+                <h4>Total Due From Customer</h4>
+                <h2>{{dashboardSummary?.customerBalanceSummary?.totalDueAmount?.toFixed(2) || 0}} BDT</h2>
+                <hr>
+                <h4>Total Due to Supplier</h4>
+                <h2>{{dashboardSummary?.supplierBalanceSummary?.totalOwedAmount?.toFixed(2)|| 0}} BDT</h2>
+            </mat-card>
+        </div>
+        <div class="col-md-3">
+            <mat-card class="sum-box mt-2">
+                <h4>Total Owe From Customer</h4>
+                <h2>{{dashboardSummary?.customerBalanceSummary?.totalOwedAmount?.toFixed(2) || 0}} BDT</h2>
+                <hr>
+                <h4>Total Owe to Supplier</h4>
+                <h2>{{dashboardSummary?.supplierBalanceSummary?.totalDueAmount?.toFixed(2) || 0}} BDT</h2>
+            </mat-card>
+        </div>
+        <div class="col-md-12 mt-5">
+            <hr>
+            <h2>Entities</h2>
+            <hr>
+            <table class="table table-striped" style="text-align:center">
+                <thead>
+                    <tr class="table-primary">
+                        <th>Product Entity</th>
+                        <th>Product Category</th>
+                        <th>Total Customer</th>
+                        <th>Total Supplier</th>
+                        <th>Total Manager</th>
+                        <th>Total HR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-Info">
+                        <th>{{entitySummary.totalProduct}}</th>
+                        <th>{{entitySummary.totalProductCategory}}</th>
+                        <th>{{entitySummary.totalCustomer}}</th>
+                        <th>{{entitySummary.totalSupplier}}</th>
+                        <th>{{entitySummary.totalManager}}</th>
+                        <th>{{entitySummary.totalHr}}</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</mat-card>
+<app-gl-accounts-details></app-gl-accounts-details>
+<app-visual-dashboard></app-visual-dashboard>

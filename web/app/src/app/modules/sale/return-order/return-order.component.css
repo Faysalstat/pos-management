@@ -1,0 +1,21 @@
+.posbody{
+    font-size: 12px;
+}
+tr, th{
+    padding: 3px;
+    margin:2px
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper ,.mat-form-field-flex{
+    margin: 0 0;
+    padding: 0;
+}
+.right-border{
+    border-right: 2px solid black ;
+}
+.input-field{
+    padding: 5px;
+}
+.input-field input{
+    padding: 0;
+}

@@ -1,0 +1,15 @@
+.menu-label{
+    font-weight: bold;
+    font-family: 'Roboto';
+    text-align: center;
+}
+.menu-card:hover{
+    cursor:default;
+}
+a{
+    text-decoration: none;
+}
+
+.navbar-brand{
+    margin-left: 10px;
+}
