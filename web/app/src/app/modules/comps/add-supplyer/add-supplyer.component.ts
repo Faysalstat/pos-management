@@ -103,11 +103,13 @@ addSupplyer(){
       // this.supplyerModel.type="",
 
     next:(res)=>{
+      this.showLoader = false;
       this.supplyerAddingForm.reset();
       this.person  = new Person();
       this.notificationService.showMessage("SUCCESS!","Supplyer Add Successful","OK",1000);
     },
     error:(err)=>{
+      this.showLoader = false;
       this.notificationService.showMessage("FAILED!","Supplyer Add Failed "+err.message,"OK",1000);
     },
     complete:()=>{

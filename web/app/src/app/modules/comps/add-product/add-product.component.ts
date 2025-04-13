@@ -78,10 +78,12 @@ export class AddProductComponent implements OnInit {
     console.log(productModel);
     this.productService.addProduct(params).subscribe({
       next:(res)=>{
+        this.showLoader = false;
         this.productAddingForm.reset();
         this.notificationService.showMessage("SUCCESS!","Product Add Successful","OK",1000);
       },
       error:(err)=>{
+        this.showLoader = false;
         this.notificationService.showMessage("FAILED!","Product Add Failed","OK",1000);
       },
       complete:()=>{

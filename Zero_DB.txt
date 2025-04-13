@@ -1,0 +1,26 @@
+INSERT INTO `glAccount`(`glName`, `balance`,`clientId`) VALUES 
+('ASSET_GL',0,1),
+('EXPENSE_GL',0,1),
+('LIABILITY_GL',0,1),
+('INCOME_GL',0,1);
+
+INSERT INTO `account`(`balance`, `accountType`,`category`,`glAccountId`) VALUES 
+(0,'CashGL','GL',1),
+(0,'AssetGL','GL',1),
+(0,'ProductGL','GL',1),
+(0,'ExpenseGL','GL',2),
+(0,'IncomeGL','GL',4),
+(0,'ExtraChargeGL','GL',4),
+(0,'DrawingGL','GL',1);
+
+INSERT INTO `appconfig` (`configName`, `value`) VALUES 
+('STOCK_APPROVAL_NEEDED', '1'), 
+('SALE_APPROVAL_NEEDED', '1'), 
+('TRANSACTION_APPROVAL_NEEDED', '1'),
+('EXPENSE_APPROVAL_NEEDED', '0'),
+('SHOP_NAME', 'Shopon Enterprise');
+
+
+INSERT INTO `person` (`personName`, `contactNo`, `personAddress`) VALUES ('Faysal Ahmad', '0000000','Rahman Nagar,BOgura');
+INSERT INTO `user` (`userName`, `password`, `userRole`, `email`, `personId`) 
+VALUES ('u001', '$2b$10$AubZYRvezCS4SKy4Rkkrie8QesC.CsRjZUlygfq1Ydl.iBsLumehq', 'ADMIN', 'developer@gmail.com',1);

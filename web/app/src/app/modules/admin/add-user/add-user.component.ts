@@ -94,10 +94,12 @@ export class AddUserComponent implements OnInit {
     let userName = this.userForm.get('userName')?.value;
     this.authService.checkExistingUser(userName).subscribe({
       next:(res)=>{
+        this.showLoader = false;
         this.isExist = res.body;
         this.message = res.message;
       },
       error:(err)=>{
+        this.showLoader = false;
         console.log(err.message);
         this.notificationService.showMessage("ERROR!","Operation Failed" + err.message,"OK",2000);
       },

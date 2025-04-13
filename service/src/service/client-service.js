@@ -74,8 +74,15 @@ exports.addClient = async (req) => {
       });
     } else if (payload.clientType == "SUPPLYER") {
       let assetGl = await GlAccount.findOne({
-        where: { glName: GL_TYPES.ASSET_GL, clientId: clientId },
+        where: { 
+          glName: GL_TYPES.ASSET_GL, 
+          clientId: clientId || 1 // Ensure clientId is set or defaults to 1
+        },
       });
+
+      if (!assetGl) {
+        throw new Error(`No GL Account found for glName: ${GL_TYPES.ASSET_GL} and clientId: ${clientId || 1}`);
+      }
       let accountModel = {
         balance: 0,
         accountType: "SUPPLYER",
