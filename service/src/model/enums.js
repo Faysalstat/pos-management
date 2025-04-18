@@ -21,6 +21,7 @@ const ACCOUNT_TYPES = Object.freeze({
   BANK_GL : "BankGL",
   PRODUCT_GL : "ProductGL",
   EXPENSE_GL: "ExpenseGL",
+  INVESTMENT_GL:"InvestmentGL",
   INCOME_GL: "IncomeGL",
   EXTRA_CHARGE_GL: "ExtraChargeGL",
   DRAWING_GL: "DrawingGL",
@@ -42,5 +43,6 @@ const TRANSACTION_CATEGORY = Object.freeze({
   DISCOUNT:"DISCOUNT",
   EXTRA_CHARGE:"EXTRA_CHARGE",
   EXPENSE:"EXPENSE",
+  DEPOSIT:"DEPOSIT"
 })
 module.exports = {TransactionTypes, GL_TYPES,APPCONFIGURATIONS,ACCOUNT_TYPES,TRANSACTION_CATEGORY};

@@ -347,6 +347,7 @@ exports.doExpenseTransaction = async (req) => {
     if (payload.transactionType == "EXPENSE") {
       respose = await doExpense(payload);
     } else if (payload.transactionType == "DEPOSIT") {
+      respose = await doDeposit(payload);
     } else if (payload.transactionType == "DRAWING") {
       respose = await drawingTransaction(payload);
     } else if (payload.transactionType == "LOAN") {
@@ -443,7 +444,70 @@ exports.doSalaryPaymentTransaction = async (req) => {
     throw new Error(err.message);
   }
 };
-
+async function doDeposit(payload) {
+  let tnxDate = new Date();
+  let voucherNo = tnxDate.getTime();
+  let cashInHandGLtnxModel = {};
+  let InvestmentGLtnxModel = {};
+  let clientId = payload.clientId;
+  let tnxAmount = Number(payload.cashAmount);
+  let investmentGlacc = await Account.findOne({
+    where: { accountType: ACCOUNT_TYPES.INVESTMENT_GL, clientId: clientId },
+    include: GlAccount,
+  });
+  let chashInHandGLAcc = await Account.findOne({
+    where: { accountType: ACCOUNT_TYPES.CASH_GL, clientId: clientId },
+    include: GlAccount,
+  });
+  try {
+    const result = await db.sequelize.transaction(async (t) => {
+      InvestmentGLtnxModel = {
+        transactionType: TransactionTypes.CREDIT,
+        transactionReason: payload.transactionReason,
+        transactionCategory: TRANSACTION_CATEGORY.DEPOSIT,
+        amount: tnxAmount,
+        transactionDate: tnxDate,
+        approvedBy: payload.approveBy,
+        issuedBy: payload.issuedBy,
+        paymentMethod: payload.paymentMethod,
+        refference: payload.comment,
+        accountNo: investmentGlacc.id,
+        voucherNo: voucherNo.toString(),
+        GL_TYPE: GL_TYPES.LIABILITY_GL,
+        isDebit: false,
+        isIncrease: true,
+        clientId: clientId,
+      };
+      debitAmount += tnxAmount;
+      cashInHandGLtnxModel = {
+        transactionType: TransactionTypes.DEBIT,
+        transactionReason: payload.transactionReason,
+        transactionCategory: "DEPOSIT",
+        amount: tnxAmount,
+        transactionDate: tnxDate,
+        approvedBy: payload.approveBy,
+        issuedBy: payload.issuedBy,
+        paymentMethod: payload.paymentMethod,
+        refference: payload.comment,
+        accountNo: chashInHandGLAcc.id,
+        voucherNo: voucherNo.toString(),
+        GL_TYPE: GL_TYPES.ASSET_GL,
+        isDebit: true,
+        isIncrease: true,
+        clientId: clientId,
+      };
+      creditAmount += tnxAmount;
+      let investmentTnx = await transactionRepo.doTransaction(InvestmentGLtnxModel);
+      let cashInHandTnx = await transactionRepo.doTransaction(cashInHandGLtnxModel);
+    });
+    if (debitAmount != creditAmount) {
+      throw new Error("Debit Credit not same");
+    }
+    return { voucherNo: voucherNo };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 async function doExpense(payload) {
   let tnxDate = new Date();
   let voucherNo = tnxDate.getTime();
