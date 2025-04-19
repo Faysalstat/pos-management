@@ -10,6 +10,9 @@
         <mat-tab label="SALARY">
             <app-salary-expense (salaryEvent)="updateBalance($event)"></app-salary-expense>
         </mat-tab>
+        <mat-tab label="CASH DEPOSIT">
+            <app-deposit (withdrawalEvent)="updateBalance($event)"></app-deposit>
+        </mat-tab>
         <mat-tab label="CASH WITHDRAWAL">
             <app-cash-withdrawal (withdrawalEvent)="updateBalance($event)"></app-cash-withdrawal>
         </mat-tab>
