@@ -219,21 +219,45 @@ async function discountAndExtraCharge(invoices){
 exports.getProfitSummary = async (invoice) => {
   let totalSal;
 };
+// async function getExpenseSum(payload) {
+//   let toDate = new Date();
+//   let fromDate = new Date(payload);
+//   toDate.setDate(toDate.getDate() + 1);
+//   try {
+//     let total = await TransactionRegistry.findAll({
+//       attributes:["amount",[db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount']],
+//       where: {
+//         transactionType:"DEBIT",
+//         transactionCategory: "EXPENSE",
+//         transactionDate :{[Op.between]: [fromDate, toDate]}
+//       }
+//     });
+//     return total[0].amount;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// }
+
 async function getExpenseSum(payload) {
   let toDate = new Date();
   let fromDate = new Date(payload);
   toDate.setDate(toDate.getDate() + 1);
+  
   try {
-    let total = await TransactionRegistry.findAll({
-      attributes:["amount",[db.sequelize.fn('sum', db.sequelize.col('amount')), 'amount']],
+    const result = await TransactionRegistry.findOne({
+      attributes: [[db.sequelize.fn('sum', db.sequelize.col('amount')), 'totalAmount']],
       where: {
-        transactionType:"DEBIT",
+        transactionType: "DEBIT",
         transactionCategory: "EXPENSE",
-        transactionDate :{[Op.between]: [fromDate, toDate]}
-      }
+        transactionDate: { [Op.between]: [fromDate, toDate] }
+      },
+      raw: true
     });
-    return total[0].amount;
+    
+    // Return 0 if no expenses found, otherwise return the sum
+    return result ? result.totalAmount || 0 : 0;
   } catch (error) {
-    throw new Error(error.message);
+    console.error('Error calculating expense sum:', error);
+    throw new Error('Failed to calculate expense sum: ' + error.message);
   }
 }

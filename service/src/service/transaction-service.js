@@ -451,6 +451,8 @@ async function doDeposit(payload) {
   let InvestmentGLtnxModel = {};
   let clientId = payload.clientId;
   let tnxAmount = Number(payload.cashAmount);
+  let debitAmount = 0;
+  let creditAmount = 0;
   let investmentGlacc = await Account.findOne({
     where: { accountType: ACCOUNT_TYPES.INVESTMENT_GL, clientId: clientId },
     include: GlAccount,
