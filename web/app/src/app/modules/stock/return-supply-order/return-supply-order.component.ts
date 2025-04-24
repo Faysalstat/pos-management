@@ -7,7 +7,7 @@ import { NotificationService } from '../../services/notification-service.service
 @Component({
   selector: 'app-return-supply-order',
   templateUrl: './return-supply-order.component.html',
-  styleUrls: ['./return-supply-order.component.css']
+  styleUrls: ['./return-supply-order.component.css'],
 })
 export class ReturnSupplyOrderComponent implements OnInit {
   productForReduce: any[] = [];
@@ -19,7 +19,8 @@ export class ReturnSupplyOrderComponent implements OnInit {
   selectedReturnCondition = 'RETURN';
   returnModel: any;
   returnOrderList: any[] = [];
-  prodMsg:string = '';
+  prodMsg: string = '';
+  isSubmitting: boolean = false;
   constructor(
     private route: Router,
     private activatedRoute: ActivatedRoute,
@@ -33,7 +34,7 @@ export class ReturnSupplyOrderComponent implements OnInit {
       suppAcc: 0,
       totalCostPrice: 0,
       totalSellPrice: 0,
-      issuedBy: localStorage.getItem("username")
+      issuedBy: localStorage.getItem('username'),
     };
     this.orderReturnCondition = [
       { label: 'Select Return Condition', value: '' },
@@ -60,8 +61,8 @@ export class ReturnSupplyOrderComponent implements OnInit {
             this.productForReduce.push(elem);
           }
         });
-        if(this.productForReduce.length == 0){
-          this.prodMsg = "***No Delivered Product To Return";
+        if (this.productForReduce.length == 0) {
+          this.prodMsg = '***No Delivered Product To Return';
         }
       },
       error: (err) => {
@@ -82,7 +83,7 @@ export class ReturnSupplyOrderComponent implements OnInit {
 
   addOrder() {
     this.returnOrderList.push(this.selectedReturnItem);
-    this.returnModel.totalCostPrice += this.selectedReturnItem.totalOrderCost;
+    // this.returnModel.totalCostPrice += this.selectedReturnItem.totalOrderCost;
     this.returnModel.totalSellPrice += this.selectedReturnItem.totalOrderPrice;
     this.selectedReturnItem = new OrderItem();
     this.selectedProduct = {};
@@ -96,10 +97,8 @@ export class ReturnSupplyOrderComponent implements OnInit {
     this.selectedReturnItem.unitType = selectedProduct.unitType;
     this.selectedReturnItem.packagingCategory =
       selectedProduct.packagingCategory;
-    this.selectedReturnItem.unitPerPackage =
-      selectedProduct.unitPerPackage;
-    this.selectedReturnItem.pricePerUnit =
-      selectedProduct.sellingPricePerUnit;
+    this.selectedReturnItem.unitPerPackage = selectedProduct.unitPerPackage;
+    this.selectedReturnItem.pricePerUnit = selectedProduct.sellingPricePerUnit;
     this.selectedReturnItem.buyingPricePerUnit =
       selectedProduct.costPricePerUnit;
     this.selectedReturnItem.quantity = selectedProduct.quantity;
@@ -116,9 +115,12 @@ export class ReturnSupplyOrderComponent implements OnInit {
   calculateOrder() {
     this.selectedReturnItem.totalOrderPrice =
       this.selectedReturnItem.quantityReturned *
-      this.selectedReturnItem.pricePerUnit;
+      this.selectedReturnItem.buyingPricePerUnit;
   }
   receiveReturn() {
+    if (this.isSubmitting) return; // Prevent multiple clicks
+    this.isSubmitting = true; // Disable the button
+
     this.returnModel.invoiceId = this.supplyInvoice.id;
     this.returnModel.orders = this.returnOrderList;
     this.returnModel.returnType = this.selectedReturnCondition;
@@ -127,12 +129,33 @@ export class ReturnSupplyOrderComponent implements OnInit {
     params.set('return', this.returnModel);
     this.inventoryService.issueSupplyOrderReturn(params).subscribe({
       next: (res) => {
-        this.notificationService.showMessage("SUCCESS","Order Successfully Returned","OK",500);
-        this.route.navigate(["/layout/supply/edit-supply-invoice",this.supplyInvoice.id]);
+        this.notificationService.showMessage(
+          'SUCCESS',
+          'Order Successfully Returned',
+          'OK',
+          500
+        );
+        this.route.navigate([
+          '/layout/supply/edit-supply-invoice',
+          this.supplyInvoice.id,
+        ]);
       },
       error: (err) => {
-        this.notificationService.showErrorMessage("ERROR","Order Returned Failed","OK",200);
+        this.notificationService.showErrorMessage(
+          'ERROR',
+          'Order Returned Failed',
+          'OK',
+          200
+        );
+        this.isSubmitting = false; // Re-enable on error
       },
     });
+  }
+  canAddProduct(): boolean {
+    return (
+      !!this.selectedProduct &&
+      !!this.selectedReturnCondition &&
+      (this.selectedReturnItem?.quantityReturned || 0) > 0
+    );
   }
 }

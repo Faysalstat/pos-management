@@ -130,7 +130,7 @@ export class ReturnOrderComponent implements OnInit {
     this.returnModel.invoiceId = this.saleInvoice.id;
     this.returnModel.orders = this.returnOrderList;
     this.returnModel.returnType = this.selectedReturnCondition;
-    this.returnModel.cusAcc = this.saleInvoice.customer.account.id;
+    this.returnModel.cusAcc = this.saleInvoice.customer?.account?.id || 0;
     const params: Map<string, any> = new Map();
     params.set('return', this.returnModel);
     this.inventoryService.issueSaleOrderReturn(params).subscribe({
@@ -139,10 +139,11 @@ export class ReturnOrderComponent implements OnInit {
         this.route.navigate(["/layout/sale/edit-sale-invoice",this.saleInvoice.id]);
       },
       error: (err) => {
+        this.showLoader = false;
         this.notificationService.showErrorMessage("ERROR","Order Returned Failed","OK",500);
       },
       complete:()=>{
-        this.showLoader = false;
+        
       }
     });
   }

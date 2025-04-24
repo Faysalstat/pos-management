@@ -38,6 +38,7 @@ export class CashTransactionComponent implements OnInit {
   showLoader: boolean = false;
   toWords = new ToWords();
   transactionDate = new Date();
+  isSubmitting: boolean = false; 
   constructor(
     private formBuilder: FormBuilder,
     private notificationService: NotificationService,
@@ -190,9 +191,11 @@ export class CashTransactionComponent implements OnInit {
   }
 
   submitTransaction() {
-    if(this.cashTransactionForm.invalid){
-      return;
+    if (this.cashTransactionForm.invalid || this.isSubmitting) {
+      return; // Prevent submission if form is invalid or already submitting
     }
+  
+    this.isSubmitting = true; // Disable the button
     this.showLoader = true;
     let transactionModel = this.cashTransactionForm.value;
     transactionModel.issuedBy =this.userName;
@@ -229,6 +232,7 @@ export class CashTransactionComponent implements OnInit {
             'OK',
             500
           );
+          this.isSubmitting = false; // Re-enable on error
         },
         complete:()=>{
           this.showLoader = false;
@@ -257,7 +261,9 @@ export class CashTransactionComponent implements OnInit {
             'OK',
             200
           );
+          this.showLoader = false;
           this.isTnxDone = false;
+          this.isSubmitting = false; // Re-enable on error
         },
         complete:()=>{
           this.showLoader = false;

@@ -342,8 +342,9 @@ export class SalePointComponent implements OnInit {
     this.orderItem.buyingPricePerUnit = this.selectedProduct.costPricePerUnit;
     this.orderItem.quantity = this.selectedProduct.quantity;
     this.unitType = this.selectedProduct.unitType;
-    this.availableStock =
-      this.selectedProduct.quantity - this.selectedProduct.quantitySold;
+    // this.availableStock = 
+      //this.selectedProduct.quantity - this.selectedProduct.quantitySold;
+    this.availableStock = this.selectedProduct.quantity;
   }
   onCodeInput() {
     this.productList.map((product) => {

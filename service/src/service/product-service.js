@@ -19,6 +19,8 @@ exports.addProduct = async (req) => {
     unitType: payload.unitType,
     quantity: 0,
     quantitySold: 0,
+    quantityReturn: 0,
+    quantityDamaged: 0,
     costPricePerUnit: payload.costPricePerUnit,
     sellingPricePerUnit: payload.sellingPricePerUnit,
     brandName: payload.brandName,

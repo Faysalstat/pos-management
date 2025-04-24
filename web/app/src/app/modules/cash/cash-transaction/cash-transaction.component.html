@@ -150,7 +150,7 @@
                 </mat-form-field>
             </div>
             <div  class="col-md-4">
-                <button style="float:right ;" (click)="submitTransaction()" mat-raised-button color="warn">Submit</button>
+                <button style="float:right ;" (click)="submitTransaction()" mat-raised-button color="warn" [disabled]="cashTransactionForm.invalid || isSubmitting">{{ isSubmitting ? 'Processing...' : 'Submit' }}</button>
             </div>
         </div>
     </form>

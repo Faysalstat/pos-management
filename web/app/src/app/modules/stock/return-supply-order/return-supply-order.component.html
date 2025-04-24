@@ -1,5 +1,5 @@
 <mat-card>
-    <h1>Return Product from Customer</h1>
+    <h1>Return Product To Supplier</h1>
     <div class="row">
         <div class="col-md-3">
             <mat-form-field appearance="outline" class="input-field">
@@ -27,7 +27,7 @@
             <mat-form-field class="input-field" appearance="outline">
                 <mat-label>Package Quantity</mat-label>
                 <input type="number" pInputText [ngModelOptions]="{standalone:true}"  
-                    (change)="calculateQuantity()" [(ngModel)]="selectedReturnItem.packageQuantity"
+                    (input)="calculateQuantity()" [(ngModel)]="selectedReturnItem.packageQuantity"
                     placeholder="Quantity" matInput>
             </mat-form-field>
         </div>
@@ -35,7 +35,7 @@
             <mat-form-field class="input-field" appearance="outline">
                 <mat-label>Loose Quantity</mat-label>
                 <input type="number" pInputText [ngModelOptions]="{standalone:true}"  
-                    (change)="calculateQuantity()" [(ngModel)]="selectedReturnItem.looseQuantity"
+                    (input)="calculateQuantity()" [(ngModel)]="selectedReturnItem.looseQuantity"
                     placeholder="Quantity" matInput>
             </mat-form-field>
         </div>
@@ -58,9 +58,10 @@
         </div> -->
         <div class="col-md-12">
             <div class="input-field">
-                <button (click)="addOrder()" mat-raised-button color="warn">Add
-                    Product</button>
-            </div> 
+                <button (click)="addOrder()" mat-raised-button color="warn"  [disabled]="!canAddProduct()">
+                    Add Product
+                </button>
+            </div>
             <hr class="mt-3">
         </div>
         <div class="col-md-12 mt-3">
@@ -85,7 +86,7 @@
                     <tr *ngFor="let order of returnOrderList; index as i">
                         <th scope="row">{{i+1}}</th>
                         <th>{{order.productName}}</th>
-                        <th>{{order.pricePerUnit}}</th>
+                        <th>{{order.buyingPricePerUnit}}</th>
                         <th>{{order.packageQuantity}}</th>
                         <th>{{order.looseQuantity}}</th>
                         <th>{{order.quantityReturned}} {{order.unitType}}</th>
@@ -103,7 +104,7 @@
         </div>
         <div class="col-md-12">
             <hr>
-            <button style="float: right;" mat-raised-button color="warn" (click)="receiveReturn()">Receive</button>
+            <button style="float: right;" mat-raised-button color="warn" (click)="receiveReturn()"  [disabled]="isSubmitting || returnOrderList.length === 0">{{ isSubmitting ? 'Processing...' : 'Receive' }}</button>
         </div>
     </div>
 </mat-card>

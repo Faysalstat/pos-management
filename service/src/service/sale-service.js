@@ -1336,8 +1336,7 @@ exports.returnSaleOrder = async (req) => {
             clientId: clientId,
           };
           let updatedProdutQuantity = product.quantity + order.quantityReturned;
-          let updatedProdutReturnQuantity =
-            product.quantityReturn + order.quantityReturned;
+          let updatedProdutReturnQuantity = product.quantityReturn + order.quantityReturned ;
           let updatedProduct = await Product.update(
             {
               quantity: updatedProdutQuantity,
@@ -1447,7 +1446,7 @@ exports.returnSaleOrder = async (req) => {
 
           // let updatedProdutQuantity = product.quantity + order.quantityReturned;
           let updatedProdutDamagedQuantity =
-            product.quantityDamaged + order.quantityReturned;
+            (product.quantityDamaged || 0) + (order.quantityReturned || 0);
           let updatedProduct = await Product.update(
             {
               quantityDamaged: updatedProdutReturnQuantity,
@@ -1474,7 +1473,7 @@ exports.returnSaleOrder = async (req) => {
           paymentMethod: "Inter_Transaction",
           refference: "Damaged_Product_Return",
           accountNo: cusAcc.id,
-          voucherNo: voucherNo.toString(),
+          voucherNo: voucherNo.toString(), 
           GL_TYPE: GL_TYPES.LIABILITY_GL,
           isDebit: false,
           isIncrease: true,
@@ -1581,9 +1580,11 @@ exports.returnSupplyOrder = async (req) => {
       };
       let product = await Product.findOne({ where: { id: order.productId } });
       let updatedProdutQuantity = product.quantity - order.quantityReturned;
+      let updatedProdutReturnQuantity = product.quantityReturn + order.quantityReturned;
       let updatedProduct = await Product.update(
         {
           quantity: updatedProdutQuantity,
+          quantityReturn: updatedProdutReturnQuantity,
         },
         { where: { id: product.id } }
       );
@@ -1601,7 +1602,8 @@ exports.returnSupplyOrder = async (req) => {
         transactionType: TransactionTypes.DEBIT,
         transactionReason: "Product_Return",
         transactionCategory: TRANSACTION_CATEGORY.PRODUCT_PURCHASE_RETURN,
-        amount: payload.totalCostPrice,
+        // amount: payload.totalCostPrice,
+        amount: payload.totalSellPrice,
         transactionDate: tnxDate,
         approvedBy: payload.approveBy,
         issuedBy: payload.issuedBy,
@@ -1615,7 +1617,8 @@ exports.returnSupplyOrder = async (req) => {
         clientId: clientId,
         transaction: t,
       };
-      debitAmount += payload.totalCostPrice;
+      // debitAmount += payload.totalCostPrice;
+      debitAmount += payload.totalSellPrice;
       let suppAccTnx = await transactionRepository.doTransaction(
         suppAccTnxModel
       );
@@ -1624,7 +1627,8 @@ exports.returnSupplyOrder = async (req) => {
         transactionType: TransactionTypes.CREDIT,
         transactionReason: "Supply_Returned",
         transactionCategory: TRANSACTION_CATEGORY.PRODUCT_PURCHASE_RETURN,
-        amount: payload.totalCostPrice,
+        // amount: payload.totalCostPrice,
+        amount: payload.totalSellPrice,
         transactionDate: tnxDate,
         approvedBy: payload.approveBy,
         issuedBy: payload.issuedBy,
@@ -1638,7 +1642,8 @@ exports.returnSupplyOrder = async (req) => {
         clientId: clientId,
         transaction: t,
       };
-      creditAmount += payload.totalCostPrice;
+      // creditAmount += payload.totalCostPrice;
+      creditAmount += payload.totalSellPrice;
       let prodAccTnx = await transactionRepository.doTransaction(
         prodAccTnxModel
       );
