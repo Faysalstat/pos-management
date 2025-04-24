@@ -159,7 +159,7 @@ export class SalePointComponent implements OnInit {
       id: [formData.id],
       doNo: [formData.doNo],
       invoiceNo: [formData.invoiceNo],
-      customerId: [formData.customerId,],
+      customerId: [formData.customerId],
       // accountId:[formData.accountId,[Validators.required]],
       orders: [formData.orders, [Validators.required]],
       productName: [formData.productName],
@@ -342,9 +342,13 @@ export class SalePointComponent implements OnInit {
     this.orderItem.buyingPricePerUnit = this.selectedProduct.costPricePerUnit;
     this.orderItem.quantity = this.selectedProduct.quantity;
     this.unitType = this.selectedProduct.unitType;
-    // this.availableStock = 
-      //this.selectedProduct.quantity - this.selectedProduct.quantitySold;
+    // this.availableStock =
+    //this.selectedProduct.quantity - this.selectedProduct.quantitySold;
     this.availableStock = this.selectedProduct.quantity;
+
+    this.orderItem.looseQuantity = 0;
+    this.orderItem.totalOrderPrice = 0;
+    //this.calculateQuantity();
   }
   onCodeInput() {
     this.productList.map((product) => {
@@ -380,14 +384,49 @@ export class SalePointComponent implements OnInit {
       this.orderItem.quantityOrdered * this.orderItem.buyingPricePerUnit
     ).toFixed(2);
   }
+  // calculateQuantity() {
+  //   if (!this.orderItem.productId) {
+  //     this.orderItem.quantityOrdered = 0;
+  //     this.orderItem.totalOrderPrice = 0;
+  //     return;
+  //   }
+
+  //   // this.orderItem.quantityOrdered = +(
+  //   //   this.orderItem.packageQuantity * this.orderItem.unitPerPackage +
+  //   //   +this.orderItem.looseQuantity
+  //   // ).toFixed(2);
+  //   // this.checkQuantity();
+  //   // this.calculateOrder();
+  //   const packageQty = Number(this.orderItem.packageQuantity) || 0;
+  //   const looseQty = Number(this.orderItem.looseQuantity) || 0;
+  //   const unitsPerPackage = Number(this.orderItem.unitPerPackage) || 1;
+
+  //   this.orderItem.quantityOrdered = +(
+  //     packageQty * unitsPerPackage +
+  //     looseQty
+  //   ).toFixed(2);
+  //   this.checkQuantity();
+  //   this.calculateOrder();
+  // }
+
   calculateQuantity() {
-    this.orderItem.quantityOrdered = +(
-      this.orderItem.packageQuantity * this.orderItem.unitPerPackage +
-      this.orderItem.looseQuantity
-    ).toFixed(2);
+    if (!this.orderItem.productId) {
+      this.orderItem.quantityOrdered = 0;
+      this.orderItem.totalOrderPrice = 0;
+      return;
+    }
+  
+    const packageQty = Number(this.orderItem.packageQuantity) || 0;
+    const looseQty = Number(this.orderItem.looseQuantity) || 0;
+    const unitsPerPackage = Number(this.orderItem.unitPerPackage) || 1;
+    
+    let totalQuantity = packageQty * unitsPerPackage + looseQty;
+    
+    this.orderItem.quantityOrdered = +totalQuantity.toFixed(2);
     this.checkQuantity();
     this.calculateOrder();
   }
+  
   calculateSummary() {
     this.totalPayableAmount = +(
       this.totalPrice -
@@ -750,13 +789,28 @@ export class SalePointComponent implements OnInit {
     closeModal();
     window.location.reload();
   }
-  addQuantity(type:string) {
-    if(type=="add"){
-      this.orderItem.looseQuantity = +(this.orderItem.looseQuantity) + 1;
-    }else{
-      this.orderItem.looseQuantity = +(this.orderItem.looseQuantity) - 1;
+  // addQuantity(type:string) {
+  //   if (!this.orderItem.productId) return;
+
+  //   if(type=="add"){
+  //     this.orderItem.looseQuantity = +(this.orderItem.looseQuantity) + 1;
+  //   }else{
+  //     this.orderItem.looseQuantity = +(this.orderItem.looseQuantity) - 1;
+  //   }
+
+  //   this.calculateQuantity();
+  // }
+  addQuantity(type: string) {
+    if (!this.orderItem.productId) return;
+
+    let looseQuantity = +this.orderItem.looseQuantity;
+    if (type === 'add') {
+      this.orderItem.looseQuantity = (looseQuantity || 0) + 1;
+    } else {
+      // Ensure quantity doesn't go below 0
+      this.orderItem.looseQuantity = Math.max(0, (looseQuantity || 0) - 1);
     }
-    
+
     this.calculateQuantity();
   }
   customerTypeChnaged(event: any) {
@@ -778,5 +832,31 @@ export class SalePointComponent implements OnInit {
     }
     // Update the form control's validation and value state
     this.saleInvoiceIssueForm.updateValueAndValidity();
+  }
+  // canAddOrder(): boolean {
+  //   return (
+  //     !!this.orderItem.productId &&
+  //     this.orderItem.looseQuantity > 0 &&
+  //     this.orderItem.totalOrderPrice > 0
+  //   );
+  // }
+
+  canAddOrder(): boolean {
+    return !!this.orderItem.productId && 
+           this.orderItem.looseQuantity > 0 && 
+           this.orderItem.totalOrderPrice > 0 &&
+           !this.isStockInsufficient();
+  }
+
+  // to check stock availability
+  isStockInsufficient(): boolean {
+    if (!this.orderItem.productId) return true;
+
+    const requestedQuantity =
+      (Number(this.orderItem.packageQuantity) || 0) *
+        (Number(this.orderItem.unitPerPackage) || 1) +
+      (Number(this.orderItem.looseQuantity) || 0);
+
+    return requestedQuantity > this.availableStock;
   }
 }
