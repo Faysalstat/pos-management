@@ -86,6 +86,7 @@ export class SalePointComponent implements OnInit {
   shopContactNo!: string;
   tnxDate: Date = new Date();
   customerType: string = 'Walk-IN Customer';
+  isSubmitting: boolean = false;
   constructor(
     private formBuilder: FormBuilder,
     private clientService: ClientService,
@@ -415,18 +416,18 @@ export class SalePointComponent implements OnInit {
       this.orderItem.totalOrderPrice = 0;
       return;
     }
-  
+
     const packageQty = Number(this.orderItem.packageQuantity) || 0;
     const looseQty = Number(this.orderItem.looseQuantity) || 0;
     const unitsPerPackage = Number(this.orderItem.unitPerPackage) || 1;
-    
+
     let totalQuantity = packageQty * unitsPerPackage + looseQty;
-    
+
     this.orderItem.quantityOrdered = +totalQuantity.toFixed(2);
     this.checkQuantity();
     this.calculateOrder();
   }
-  
+
   calculateSummary() {
     this.totalPayableAmount = +(
       this.totalPrice -
@@ -513,6 +514,8 @@ export class SalePointComponent implements OnInit {
       );
       return;
     }
+    if (this.isSubmitting) return; // Prevent multiple clicks
+    this.isSubmitting = true; // Disable the button
     this.showLoader = true;
     let orderIssueModel = this.saleInvoiceIssueForm.value;
     orderIssueModel.accountId = this.account.id;
@@ -551,6 +554,7 @@ export class SalePointComponent implements OnInit {
             'OK',
             2000
           );
+          this.isSubmitting = false; // Re-enable if API fails
           this.showLoader = false;
         },
         complete: () => {
@@ -842,10 +846,12 @@ export class SalePointComponent implements OnInit {
   // }
 
   canAddOrder(): boolean {
-    return !!this.orderItem.productId && 
-           this.orderItem.looseQuantity > 0 && 
-           this.orderItem.totalOrderPrice > 0 &&
-           !this.isStockInsufficient();
+    return (
+      !!this.orderItem.productId &&
+      this.orderItem.looseQuantity > 0 &&
+      this.orderItem.totalOrderPrice > 0 &&
+      !this.isStockInsufficient()
+    );
   }
 
   // to check stock availability
