@@ -209,6 +209,7 @@ export class ReturnOrderComponent implements OnInit {
   //     this.selectedReturnItem.looseQuantity;
   //   this.calculateOrder();
   // }
+  
   calculateQuantity() {
     if (!this.selectedProduct) return;
 
