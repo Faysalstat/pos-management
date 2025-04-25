@@ -18,9 +18,9 @@ export class ReturnOrderComponent implements OnInit {
   selectedReturnCondition = 'RETURN';
   returnModel!: any;
   returnOrderList: any[] = [];
-  prodMsg:string = '';
+  prodMsg: string = '';
   totalAmount = 0;
-  productToReturn:any;
+  productToReturn: any;
   showLoader: boolean = false;
   constructor(
     private route: Router,
@@ -35,7 +35,7 @@ export class ReturnOrderComponent implements OnInit {
       cusAcc: 0,
       totalCostPrice: 0,
       totalSellPrice: 0,
-      issuedBy: localStorage.getItem("username")
+      issuedBy: localStorage.getItem('username'),
     };
     this.orderReturnCondition = [
       { label: 'Select Return Condition', value: '' },
@@ -62,8 +62,8 @@ export class ReturnOrderComponent implements OnInit {
             this.productForReduce.push(elem);
           }
         });
-        if(this.productForReduce.length == 0){
-          this.prodMsg = "***No Delivered Product To Return";
+        if (this.productForReduce.length == 0) {
+          this.prodMsg = '***No Delivered Product To Return';
         }
       },
       error: (err) => {
@@ -89,7 +89,7 @@ export class ReturnOrderComponent implements OnInit {
     this.selectedReturnItem = new OrderItem();
     this.selectedProduct = {};
   }
-  onSelectReturnOrder(event: any) {
+   onSelectReturnOrder(event: any) {
     let selectedProduct = event.source.value.product;
     console.log(event.source.value);
     this.productToReturn = event.source.value;
@@ -100,10 +100,8 @@ export class ReturnOrderComponent implements OnInit {
     this.selectedReturnItem.unitType = selectedProduct.unitType;
     this.selectedReturnItem.packagingCategory =
       selectedProduct.packagingCategory;
-    this.selectedReturnItem.unitPerPackage =
-      selectedProduct.unitPerPackage;
-    this.selectedReturnItem.pricePerUnit =
-      selectedProduct.sellingPricePerUnit;
+    this.selectedReturnItem.unitPerPackage = selectedProduct.unitPerPackage;
+    this.selectedReturnItem.pricePerUnit = selectedProduct.sellingPricePerUnit;
     this.selectedReturnItem.buyingPricePerUnit =
       selectedProduct.costPricePerUnit;
     this.selectedReturnItem.quantity = selectedProduct.quantity;
@@ -135,16 +133,52 @@ export class ReturnOrderComponent implements OnInit {
     params.set('return', this.returnModel);
     this.inventoryService.issueSaleOrderReturn(params).subscribe({
       next: (res) => {
-        this.notificationService.showMessage("SUCCESS","Order Successfull Returned","OK",500);
-        this.route.navigate(["/layout/sale/edit-sale-invoice",this.saleInvoice.id]);
+        this.notificationService.showMessage(
+          'SUCCESS',
+          'Order Successfull Returned',
+          'OK',
+          500
+        );
+        this.route.navigate([
+          '/layout/sale/edit-sale-invoice',
+          this.saleInvoice.id,
+        ]);
       },
       error: (err) => {
         this.showLoader = false;
-        this.notificationService.showErrorMessage("ERROR","Order Returned Failed","OK",500);
+        this.notificationService.showErrorMessage(
+          'ERROR',
+          'Order Returned Failed',
+          'OK',
+          500
+        );
       },
-      complete:()=>{
-        
-      }
+      complete: () => {},
     });
+  }
+
+  canAddOrder(): boolean {
+    return (
+      !!this.selectedProduct &&
+      (this.selectedReturnItem.looseQuantity || 0) > 0 &&
+      !this.isStockInsufficient()
+    );
+  }
+
+  // to check stock availability
+  isStockInsufficient(): boolean {
+    const existingQty =
+      this.returnOrderList.find(
+        (item) => item.productId === this.selectedReturnItem.productId
+      )?.quantityReturned || 0;
+
+    const availableToReturn =
+      (this.productToReturn?.quantityDelivered || 0) -
+      (this.productToReturn?.quantityReturned || 0);
+
+    return (
+      existingQty + this.selectedReturnItem.quantityReturned > 
+      availableToReturn
+    );
   }
 }

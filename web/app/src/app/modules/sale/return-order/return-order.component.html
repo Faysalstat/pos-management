@@ -5,16 +5,16 @@
             <div class="row">
                 <div class="col-md-4">
                     <mat-form-field appearance="outline" class="input-field">
-                        <mat-label>Product </mat-label>
-                        <mat-select [ngModelOptions]="{standalone:true}" [(ngModel)]="selectedProduct">
-                            <mat-option *ngFor="let order of productForReduce;index as i"
-                                (onSelectionChange)="onSelectReturnOrder($event)"
-                                [value]="order">{{order?.product?.productName}}
-                            </mat-option>
-                        </mat-select>
+                      <mat-label>Product</mat-label>
+                      <mat-select [ngModelOptions]="{standalone:true}" [(ngModel)]="selectedProduct"
+                                  (selectionChange)="onSelectReturnOrder($event)">
+                        <mat-option *ngFor="let order of productForReduce; index as i" [value]="order">
+                          {{order?.product?.productName}}
+                        </mat-option>
+                      </mat-select>
                     </mat-form-field>
                     <p><span style="color:red">{{prodMsg}}</span></p>
-                </div>
+                  </div>
                 <div class="col-md-2">
                     <mat-form-field appearance="outline" class="input-field">
                         <mat-label>Return Condition</mat-label>
@@ -32,13 +32,28 @@
                             [(ngModel)]="selectedReturnItem.packageQuantity" placeholder="Quantity" matInput>
                     </mat-form-field>
                 </div> -->
-                <div class="col-md-2">
+                <!-- <div class="col-md-2">
                     <mat-form-field class="input-field" appearance="outline">
                         <mat-label>Return Quantity</mat-label>
                         <input type="number" pInputText [ngModelOptions]="{standalone:true}" (change)="calculateQuantity()"
-                            [(ngModel)]="selectedReturnItem.looseQuantity" placeholder="Quantity" matInput>
+                            [(ngModel)]="selectedReturnItem.looseQuantity" placeholder="Quantity" matInput [disabled]="!selectedProduct">
                     </mat-form-field>
-                </div>
+                </div> -->
+                <div class="col-md-2">
+                    <mat-form-field class="input-field" appearance="outline">
+                      <mat-label>Return Quantity</mat-label>
+                      <input type="number" 
+                             pInputText 
+                             [ngModelOptions]="{standalone:true}" 
+                             (change)="calculateQuantity()"
+                             [(ngModel)]="selectedReturnItem.looseQuantity" 
+                             placeholder="Quantity" 
+                             matInput 
+                             [disabled]="!selectedProduct"
+                             min="0"
+                             onkeypress="return event.charCode >= 48">
+                    </mat-form-field>
+                  </div>
                 <!-- <div class="col-md-2">
                     <mat-form-field class="input-field" appearance="outline">
                         <mat-label>Total Quantity</mat-label>
@@ -70,7 +85,7 @@
                 </div>
                 <div class="col-md-12">
                     <div class="input-field">
-                        <button (click)="addOrder()" mat-raised-button color="warn">Add
+                        <button (click)="addOrder()" mat-raised-button color="warn" [disabled]="!canAddOrder()">Add
                             Product</button>
                     </div>
                     <hr class="mt-3">
