@@ -181,7 +181,7 @@
                     <div class="col-md-12">
                         <h2 style="color: red;">{{stockMsg}}</h2>
                         <div class="input-field">
-                            <button (click)="addOrder()" mat-raised-button color="warn" [disabled]="!canAddOrder()">Add
+                            <button  #addOrderBtn (click)="addOrder()" mat-raised-button color="warn" [disabled]="!canAddOrder()">Add
                                 Order</button>
                         </div>
                         <hr class="mt-3">

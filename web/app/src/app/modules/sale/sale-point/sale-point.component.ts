@@ -4,6 +4,7 @@ import {
   ElementRef,
   OnInit,
   ViewChild,
+  HostListener
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToWords } from 'to-words';
@@ -87,6 +88,17 @@ export class SalePointComponent implements OnInit {
   tnxDate: Date = new Date();
   customerType: string = 'Walk-IN Customer';
   isSubmitting: boolean = false;
+  @HostListener('document:keydown.enter', ['$event'])
+  handleEnterKey(event: KeyboardEvent) {
+    // 1. Prevent default form submission behavior
+    event.preventDefault();
+    
+    // 2. Check if button would be enabled
+    if (this.canAddOrder()) {
+      // 3. Execute the add order action
+      this.addOrder();
+    }
+  }
   constructor(
     private formBuilder: FormBuilder,
     private clientService: ClientService,
@@ -347,9 +359,15 @@ export class SalePointComponent implements OnInit {
     //this.selectedProduct.quantity - this.selectedProduct.quantitySold;
     this.availableStock = this.selectedProduct.quantity;
 
-    this.orderItem.looseQuantity = 0;
-    this.orderItem.totalOrderPrice = 0;
-    //this.calculateQuantity();
+    // Set default quantity to 1 if product is available
+    if (this.availableStock > 0) {
+      this.orderItem.looseQuantity = 1;
+      this.orderItem.packageQuantity = 0; // Reset package quantity
+      this.calculateQuantity(); // This will calculate the total price
+    } else {
+      this.orderItem.looseQuantity = 0;
+      this.orderItem.totalOrderPrice = 0;
+    }
   }
   onCodeInput() {
     this.productList.map((product) => {
@@ -457,6 +475,8 @@ export class SalePointComponent implements OnInit {
   // testing
 
   addOrder() {
+    if (!this.canAddOrder()) return;
+    
     if (
       !this.orderItem.productId ||
       !this.orderItem.quantityOrdered ||
