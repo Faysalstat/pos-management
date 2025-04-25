@@ -1,60 +1,75 @@
 <div class="container">
-    <mat-card>
-        <h1>Return Product from Customer</h1>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <mat-form-field appearance="outline" class="input-field">
-                      <mat-label>Product</mat-label>
-                      <mat-select [ngModelOptions]="{standalone:true}" [(ngModel)]="selectedProduct"
-                                  (selectionChange)="onSelectReturnOrder($event)">
-                        <mat-option *ngFor="let order of productForReduce; index as i" [value]="order">
-                          {{order?.product?.productName}}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                    <p><span style="color:red">{{prodMsg}}</span></p>
-                  </div>
-                <div class="col-md-2">
-                    <mat-form-field appearance="outline" class="input-field">
-                        <mat-label>Return Condition</mat-label>
-                        <mat-select [ngModelOptions]="{standalone:true}" [(ngModel)]="selectedReturnCondition">
-                            <mat-option *ngFor="let condition of orderReturnCondition;index as i"
-                                [value]="condition.value">{{condition?.label}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <!-- <div class="col-md-2">
+  <mat-card>
+    <h1>Return Product from Customer</h1>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="input-field">
+            <mat-label>Product</mat-label>
+            <mat-select
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="selectedProduct"
+              (selectionChange)="onSelectReturnOrder($event)"
+            >
+              <mat-option
+                *ngFor="let order of productForReduce; index as i"
+                [value]="order"
+              >
+                {{ order?.product?.productName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <p>
+            <span style="color: red">{{ prodMsg }}</span>
+          </p>
+        </div>
+        <div class="col-md-2">
+          <mat-form-field appearance="outline" class="input-field">
+            <mat-label>Return Condition</mat-label>
+            <mat-select
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="selectedReturnCondition"
+            >
+              <mat-option
+                *ngFor="let condition of orderReturnCondition; index as i"
+                [value]="condition.value"
+                >{{ condition?.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-md-2">
                     <mat-form-field class="input-field" appearance="outline">
                         <mat-label>Package Quantity</mat-label>
                         <input type="number" pInputText [ngModelOptions]="{standalone:true}" (change)="calculateQuantity()"
                             [(ngModel)]="selectedReturnItem.packageQuantity" placeholder="Quantity" matInput>
                     </mat-form-field>
                 </div> -->
-                <!-- <div class="col-md-2">
+        <!-- <div class="col-md-2">
                     <mat-form-field class="input-field" appearance="outline">
                         <mat-label>Return Quantity</mat-label>
                         <input type="number" pInputText [ngModelOptions]="{standalone:true}" (change)="calculateQuantity()"
                             [(ngModel)]="selectedReturnItem.looseQuantity" placeholder="Quantity" matInput [disabled]="!selectedProduct">
                     </mat-form-field>
                 </div> -->
-                <div class="col-md-2">
-                    <mat-form-field class="input-field" appearance="outline">
-                      <mat-label>Return Quantity</mat-label>
-                      <input type="number" 
-                             pInputText 
-                             [ngModelOptions]="{standalone:true}" 
-                             (change)="calculateQuantity()"
-                             [(ngModel)]="selectedReturnItem.looseQuantity" 
-                             placeholder="Quantity" 
-                             matInput 
-                             [disabled]="!selectedProduct"
-                             min="0"
-                             onkeypress="return event.charCode >= 48">
-                    </mat-form-field>
-                  </div>
-                <!-- <div class="col-md-2">
+        <div class="col-md-2">
+          <mat-form-field class="input-field" appearance="outline">
+            <mat-label>Return Quantity</mat-label>
+            <input
+              type="number"
+              pInputText
+              [ngModelOptions]="{ standalone: true }"
+              (input)="calculateQuantity()"
+              [(ngModel)]="selectedReturnItem.looseQuantity"
+              placeholder="Quantity"
+              matInput
+              [disabled]="!selectedProduct"
+              min="0"
+              onkeypress="return event.charCode >= 48"
+            />
+          </mat-form-field>
+        </div>
+        <!-- <div class="col-md-2">
                     <mat-form-field class="input-field" appearance="outline">
                         <mat-label>Total Quantity</mat-label>
                         <input type="number" pInputText [ngModelOptions]="{standalone:true}" [disabled]="true"
@@ -62,83 +77,98 @@
                             placeholder="Quantity" matInput>
                     </mat-form-field>
                 </div> -->
-                <div class="col-md-12">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Quantity Ordered</th>
-                                <td>{{productToReturn?.quantityOrdered || 0}}</td>
-                                <th>Quantity Delivered</th>
-                                <td>{{productToReturn?.quantityDelivered || 0}}</td>
-                                <th>Quantity Returned</th>
-                                <td>{{productToReturn?.quantityReturned || 0}}</td>
-                                
-                                
-                            </tr>
-                            <tr>
-                                <th>Available:</th>
-                                <th>{{(productToReturn?.quantityDelivered || 0)-(productToReturn?.quantityReturned || 0)}}</th>
-                            </tr>
-                        </thead>
-                    
-                    </table>
-                </div>
-                <div class="col-md-12">
-                    <div class="input-field">
-                        <button (click)="addOrder()" mat-raised-button color="warn" [disabled]="!canAddOrder()">Add
-                            Product</button>
-                    </div>
-                    <hr class="mt-3">
-                </div>
-            </div>
-            <div class="row">
-
-                <div class="col-md-12 mt-3">
-                    <table class="table table-striped" style="text-align:center ;">
-                        <thead>
-                            <tr>
-                                <th>SN</th>
-                                <th style="width:30% ;">Product Name</th>
-                                <th>Rate</th>
-                                <!-- <th>Package Quantity</th>
-                                <th>Loose Quantity</th> -->
-                                <th>Return Quantity</th>
-                                <th>Price</th>
-                                <!-- <th>Action</th> -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngIf="returnOrderList.length==0">
-                                <th colspan="5" style="font-weight:bold;text-align: center;">No Order Added Yet!
-                                </th>
-                            </tr>
-                            <tr *ngFor="let order of returnOrderList; index as i">
-                                <th scope="row">{{i+1}}</th>
-                                <th>{{order.productName}}</th>
-                                <th>{{order.pricePerUnit}}</th>
-                                <!-- <th>{{order.packageQuantity}}</th>
-                                <th>{{order.looseQuantity}}</th> -->
-                                <th>{{order.quantityReturned}} {{order.unitType}}</th>
-                                <th>{{order.totalOrderPrice}} BDT</th>
-                                <!-- <th>{{order.totalPrice}}</th> -->
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="4" style="text-align: right;">Total Amount</th>
-                                <th>{{returnModel?.totalSellPrice}} BDT</th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <div class="col-md-12">
-                    <hr>
-                    <button style="float: right;" mat-raised-button color="warn" (click)="receiveReturn()">Receive</button>
-                </div>
-    
-            </div>
+        <div class="col-md-12">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Quantity Ordered</th>
+                <td>{{ productToReturn?.quantityOrdered || 0 }}</td>
+                <th>Quantity Delivered</th>
+                <td>{{ productToReturn?.quantityDelivered || 0 }}</td>
+                <th>Quantity Returned</th>
+                <td>{{ productToReturn?.quantityReturned || 0 }}</td>
+              </tr>
+              <tr>
+                <th>Available:</th>
+                <th>
+                  {{
+                    (productToReturn?.quantityDelivered || 0) -
+                      (productToReturn?.quantityReturned || 0)
+                  }}
+                </th>
+              </tr>
+            </thead>
+          </table>
         </div>
-
-    </mat-card>
-    <app-page-loader *ngIf="showLoader"></app-page-loader>
+        <div class="col-md-12">
+          <div class="input-field">
+            <button
+              #addOrderBtn
+              (click)="addOrder()"
+              mat-raised-button
+              color="warn"
+              [disabled]="!canAddOrder()"
+            >
+              Add Product
+            </button>
+          </div>
+          <hr class="mt-3" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 mt-3">
+          <table class="table table-striped" style="text-align: center">
+            <thead>
+              <tr>
+                <th>SN</th>
+                <th style="width: 30%">Product Name</th>
+                <th>Rate</th>
+                <!-- <th>Package Quantity</th>
+                                <th>Loose Quantity</th> -->
+                <th>Return Quantity</th>
+                <th>Price</th>
+                <!-- <th>Action</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="returnOrderList.length == 0">
+                <th colspan="5" style="font-weight: bold; text-align: center">
+                  No Order Added Yet!
+                </th>
+              </tr>
+              <tr *ngFor="let order of returnOrderList; index as i">
+                <th scope="row">{{ i + 1 }}</th>
+                <th>{{ order.productName }}</th>
+                <th>{{ order.pricePerUnit }}</th>
+                <!-- <th>{{order.packageQuantity}}</th>
+                                <th>{{order.looseQuantity}}</th> -->
+                <th>{{ order.quantityReturned }} {{ order.unitType }}</th>
+                <th>{{ order.totalOrderPrice }} BDT</th>
+                <!-- <th>{{order.totalPrice}}</th> -->
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="4" style="text-align: right">Total Amount</th>
+                <th>{{ returnModel?.totalSellPrice }} BDT</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="col-md-12">
+          <hr />
+          <button
+            style="float: right"
+            mat-raised-button
+            color="warn"
+            (click)="receiveReturn()"
+            [disabled]="isSubmitting || returnOrderList.length === 0"
+          >
+            {{ isSubmitting ? "Processing..." : "Receive" }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+  <app-page-loader *ngIf="showLoader"></app-page-loader>
 </div>

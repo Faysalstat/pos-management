@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderItem } from '../../model/models';
 import { InventoryService } from '../../services/inventory.service';
@@ -22,6 +22,18 @@ export class ReturnOrderComponent implements OnInit {
   totalAmount = 0;
   productToReturn: any;
   showLoader: boolean = false;
+  isSubmitting: boolean = false;
+  @HostListener('document:keydown.enter', ['$event'])
+  handleEnterKey(event: KeyboardEvent) {
+    // 1. Prevent default form submission behavior
+    event.preventDefault();
+
+    // 2. Check if button would be enabled
+    if (this.canAddOrder()) {
+      // 3. Execute the add order action
+      this.addOrder();
+    }
+  }
   constructor(
     private route: Router,
     private activatedRoute: ActivatedRoute,
@@ -82,14 +94,95 @@ export class ReturnOrderComponent implements OnInit {
     );
   }
 
+  // addOrder() {
+  //   this.returnOrderList.push(this.selectedReturnItem);
+  //   this.returnModel.totalCostPrice += this.selectedReturnItem.totalOrderCost;
+  //   this.returnModel.totalSellPrice += this.selectedReturnItem.totalOrderPrice;
+  //   this.selectedReturnItem = new OrderItem();
+  //   this.selectedProduct = {};
+  // }
   addOrder() {
-    this.returnOrderList.push(this.selectedReturnItem);
-    this.returnModel.totalCostPrice += this.selectedReturnItem.totalOrderCost;
-    this.returnModel.totalSellPrice += this.selectedReturnItem.totalOrderPrice;
+    if (!this.canAddOrder()) return;
+
+    // Validate required fields
+    if (
+      !this.selectedReturnItem.productId ||
+      !this.selectedReturnItem.quantityReturned ||
+      !this.selectedReturnItem.pricePerUnit
+    ) {
+      return;
+    }
+
+    // Calculate available quantity
+    const available =
+      (this.productToReturn?.quantityDelivered || 0) -
+      (this.productToReturn?.quantityReturned || 0);
+
+    // Check for existing product in returnOrderList
+    const existingItemIndex = this.returnOrderList.findIndex(
+      (item) => item.productId === this.selectedReturnItem.productId
+    );
+
+    if (existingItemIndex > -1) {
+      // Calculate total requested return quantity
+      const totalRequested =
+        this.returnOrderList[existingItemIndex].quantityReturned +
+        this.selectedReturnItem.quantityReturned;
+
+      // Validate available quantity
+      if (totalRequested > available) {
+        const remaining =
+          available - this.returnOrderList[existingItemIndex].quantityReturned;
+        this.notificationService.showErrorMessage(
+          'Return Quantity Exceeded',
+          `You can only return ${remaining} more units of ${this.selectedReturnItem.productName}`,
+          'OK',
+          3000
+        );
+        return;
+      }
+
+      // Update existing item
+      const existingItem = this.returnOrderList[existingItemIndex];
+      existingItem.quantityReturned = totalRequested;
+      existingItem.totalOrderPrice =
+        existingItem.quantityReturned * existingItem.pricePerUnit;
+      existingItem.totalOrderCost =
+        existingItem.quantityReturned * existingItem.buyingPricePerUnit;
+
+      // Update receipt model totals
+      this.returnModel.totalCostPrice = this.returnOrderList.reduce(
+        (sum, item) => sum + item.totalOrderCost,
+        0
+      );
+      this.returnModel.totalSellPrice = this.returnOrderList.reduce(
+        (sum, item) => sum + item.totalOrderPrice,
+        0
+      );
+    } else {
+      // Validate available quantity for new item
+      if (this.selectedReturnItem.quantityReturned > available) {
+        this.notificationService.showErrorMessage(
+          'Return Quantity Exceeded',
+          `Only ${available} units available for ${this.selectedReturnItem.productName}`,
+          'OK',
+          3000
+        );
+        return;
+      }
+
+      // Add new item
+      this.returnOrderList.push({ ...this.selectedReturnItem });
+      this.returnModel.totalCostPrice += this.selectedReturnItem.totalOrderCost;
+      this.returnModel.totalSellPrice +=
+        this.selectedReturnItem.totalOrderPrice;
+    }
+
+    // Reset for next item
     this.selectedReturnItem = new OrderItem();
-    this.selectedProduct = {};
+    this.selectedProduct = null;
   }
-   onSelectReturnOrder(event: any) {
+  onSelectReturnOrder(event: any) {
     let selectedProduct = event.source.value.product;
     console.log(event.source.value);
     this.productToReturn = event.source.value;
@@ -106,13 +199,57 @@ export class ReturnOrderComponent implements OnInit {
       selectedProduct.costPricePerUnit;
     this.selectedReturnItem.quantity = selectedProduct.quantity;
     // this.selectedReturnItem.quantityReturne
+    this.selectedReturnItem.looseQuantity = 0;
   }
 
+  // calculateQuantity() {
+  //   this.selectedReturnItem.quantityReturned =
+  //     this.selectedReturnItem.packageQuantity *
+  //       this.selectedReturnItem.unitPerPackage +
+  //     this.selectedReturnItem.looseQuantity;
+  //   this.calculateOrder();
+  // }
   calculateQuantity() {
+    if (!this.selectedProduct) return;
+
+    // Ensure quantity is not negative
+    if (this.selectedReturnItem.looseQuantity < 0) {
+      this.selectedReturnItem.looseQuantity = 0;
+    }
+
+    const available =
+      (this.productToReturn?.quantityDelivered || 0) -
+      (this.productToReturn?.quantityReturned || 0);
+
+    // Calculate total requested quantity (including existing in returnOrderList)
+    const existingQty =
+      this.returnOrderList.find(
+        (item) => item.productId === this.selectedReturnItem.productId
+      )?.quantityReturned || 0;
+
+    const totalRequested =
+      existingQty +
+      this.selectedReturnItem.packageQuantity *
+        this.selectedReturnItem.unitPerPackage +
+      this.selectedReturnItem.looseQuantity;
+
+    // Ensure quantity doesn't exceed available
+    if (totalRequested > available) {
+      const remaining = available - existingQty;
+      //this.selectedReturnItem.looseQuantity = Math.max(0, remaining);
+      this.notificationService.showMessage(
+        'WARNING',
+        `Only ${remaining} units can be returned`,
+        'OK',
+        2000
+      );
+    }
+
     this.selectedReturnItem.quantityReturned =
       this.selectedReturnItem.packageQuantity *
         this.selectedReturnItem.unitPerPackage +
       this.selectedReturnItem.looseQuantity;
+
     this.calculateOrder();
   }
   calculateOrder() {
@@ -124,6 +261,8 @@ export class ReturnOrderComponent implements OnInit {
       this.selectedReturnItem.buyingPricePerUnit;
   }
   receiveReturn() {
+    if (this.isSubmitting) return; // Prevent multiple clicks
+    this.isSubmitting = true; // Disable the button
     this.showLoader = true;
     this.returnModel.invoiceId = this.saleInvoice.id;
     this.returnModel.orders = this.returnOrderList;
@@ -146,6 +285,7 @@ export class ReturnOrderComponent implements OnInit {
       },
       error: (err) => {
         this.showLoader = false;
+        this.isSubmitting = false; // Re-enable if API fails
         this.notificationService.showErrorMessage(
           'ERROR',
           'Order Returned Failed',
@@ -157,14 +297,29 @@ export class ReturnOrderComponent implements OnInit {
     });
   }
 
+  // canAddOrder(): boolean {
+  //   return (
+  //     !!this.selectedProduct &&
+  //     (this.selectedReturnItem.looseQuantity || 0) > 0 &&
+  //     !this.isStockInsufficient()
+  //   );
+  // }
   canAddOrder(): boolean {
-    return (
-      !!this.selectedProduct &&
-      (this.selectedReturnItem.looseQuantity || 0) > 0 &&
-      !this.isStockInsufficient()
-    );
-  }
+    if (!this.selectedProduct || !this.selectedReturnItem.quantityReturned) {
+      return false;
+    }
 
+    const existingQty =
+      this.returnOrderList.find(
+        (item) => item.productId === this.selectedReturnItem.productId
+      )?.quantityReturned || 0;
+
+    const available =
+      (this.productToReturn?.quantityDelivered || 0) -
+      (this.productToReturn?.quantityReturned || 0);
+
+    return existingQty + this.selectedReturnItem.quantityReturned <= available;
+  }
   // to check stock availability
   isStockInsufficient(): boolean {
     const existingQty =
@@ -177,8 +332,7 @@ export class ReturnOrderComponent implements OnInit {
       (this.productToReturn?.quantityReturned || 0);
 
     return (
-      existingQty + this.selectedReturnItem.quantityReturned > 
-      availableToReturn
+      existingQty + this.selectedReturnItem.quantityReturned > availableToReturn
     );
   }
 }
