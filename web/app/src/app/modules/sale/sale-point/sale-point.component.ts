@@ -4,7 +4,7 @@ import {
   ElementRef,
   OnInit,
   ViewChild,
-  HostListener
+  HostListener,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToWords } from 'to-words';
@@ -92,7 +92,7 @@ export class SalePointComponent implements OnInit {
   handleEnterKey(event: KeyboardEvent) {
     // 1. Prevent default form submission behavior
     event.preventDefault();
-    
+
     // 2. Check if button would be enabled
     if (this.canAddOrder()) {
       // 3. Execute the add order action
@@ -474,29 +474,118 @@ export class SalePointComponent implements OnInit {
 
   // testing
 
+  // addOrder() {
+  //   if (!this.canAddOrder()) return;
+
+  //   if (
+  //     !this.orderItem.productId ||
+  //     !this.orderItem.quantityOrdered ||
+  //     !this.orderItem.pricePerUnit
+  //   ) {
+  //     return;
+  //   }
+
+  //   this.orderList.push(this.orderItem);
+  //   this.orderItem = new OrderItem();
+
+  //   let totalPrice = 0;
+  //   let totalCost = 0;
+
+  //   this.orderList.map((elem) => {
+  //     totalPrice += elem.totalOrderPrice;
+  //     totalCost += elem.totalOrderCost;
+  //     this.receiptModel.orders.push({
+  //       item: elem.productName,
+  //       rate: elem.pricePerUnit,
+  //       qty: elem.quantityOrdered,
+  //       total: elem.totalOrderPrice,
+  //     });
+  //   });
+
+  //   this.saleInvoiceIssueForm.get('orders')?.setValue(this.orderList);
+  //   this.saleInvoiceIssueForm.get('totalPrice')?.setValue(totalPrice);
+  //   this.saleInvoiceIssueForm.get('totalCost')?.setValue(totalCost);
+  //   this.saleInvoiceIssueForm.get('productName')?.setValue('');
+  //   this.saleInvoiceIssueForm.get('productCode')?.setValue('');
+  //   this.totalPrice = totalPrice;
+  //   this.totalPayableAmount = this.totalPrice - this.previousBalance;
+  //   this.saleInvoiceIssueForm
+  //     .get('totalPaidAmount')
+  //     ?.setValue(this.totalPayableAmount);
+  //   this.calculateSummary();
+
+  //   if (this.totalPayableAmount < 0) {
+  //     this.balanceType = 'Return';
+  //   } else {
+  //     this.balanceType = 'Payable';
+  //   }
+  // }
+
   addOrder() {
     if (!this.canAddOrder()) return;
-    
-    if (
-      !this.orderItem.productId ||
-      !this.orderItem.quantityOrdered ||
-      !this.orderItem.pricePerUnit
-    ) {
+
+    if (!this.orderItem.productId || !this.orderItem.quantityOrdered || !this.orderItem.pricePerUnit) {
       return;
     }
-    this.orderList.push(this.orderItem);
+
+    // Check for existing product in orderList
+    const existingItemIndex = this.orderList.findIndex(
+      item => item.productId === this.orderItem.productId
+    );
+
+    // Calculate total requested quantity
+    const requestedQty = existingItemIndex > -1
+      ? this.orderList[existingItemIndex].quantityOrdered + this.orderItem.quantityOrdered
+      : this.orderItem.quantityOrdered;
+
+    // Stock validation
+    if (requestedQty > this.availableStock) {
+      const available = this.availableStock - 
+                       (existingItemIndex > -1 ? this.orderList[existingItemIndex].quantityOrdered : 0);
+      this.notificationService.showErrorMessage(
+        'Stock Exceeded',
+        `Only ${available} units available for ${this.orderItem.productName}`,
+        'OK',
+        3000
+      );
+      return;
+    }
+
+    if (existingItemIndex > -1) {
+      // Update existing item
+      const existingItem = this.orderList[existingItemIndex];
+      existingItem.quantityOrdered += this.orderItem.quantityOrdered;
+      existingItem.totalOrderPrice = existingItem.quantityOrdered * existingItem.pricePerUnit;
+      existingItem.totalOrderCost = existingItem.quantityOrdered * existingItem.buyingPricePerUnit;
+      
+      // Update receipt model
+      const receiptItemIndex = this.receiptModel.orders.findIndex(
+        item => item.item === existingItem.productName
+      );
+      if (receiptItemIndex > -1) {
+        this.receiptModel.orders[receiptItemIndex].qty = existingItem.quantityOrdered;
+        this.receiptModel.orders[receiptItemIndex].total = existingItem.totalOrderPrice;
+      }
+    } else {
+      // Add new item
+      this.orderList.push({...this.orderItem});
+      this.receiptModel.orders.push({
+        item: this.orderItem.productName,
+        rate: this.orderItem.pricePerUnit,
+        qty: this.orderItem.quantityOrdered,
+        total: this.orderItem.totalOrderPrice
+      });
+    }
+
+    // Reset for next item
     this.orderItem = new OrderItem();
+    
+    // Update totals (keep your existing calculations)
     let totalPrice = 0;
     let totalCost = 0;
-    this.orderList.map((elem) => {
+    this.orderList.forEach((elem) => {
       totalPrice += elem.totalOrderPrice;
       totalCost += elem.totalOrderCost;
-      this.receiptModel.orders.push({
-        item: elem.productName,
-        rate: elem.pricePerUnit,
-        qty: elem.quantityOrdered,
-        total: elem.totalOrderPrice,
-      });
     });
 
     this.saleInvoiceIssueForm.get('orders')?.setValue(this.orderList);
@@ -506,9 +595,7 @@ export class SalePointComponent implements OnInit {
     this.saleInvoiceIssueForm.get('productCode')?.setValue('');
     this.totalPrice = totalPrice;
     this.totalPayableAmount = this.totalPrice - this.previousBalance;
-    this.saleInvoiceIssueForm
-      .get('totalPaidAmount')
-      ?.setValue(this.totalPayableAmount);
+    this.saleInvoiceIssueForm.get('totalPaidAmount')?.setValue(this.totalPayableAmount);
     this.calculateSummary();
 
     if (this.totalPayableAmount < 0) {
@@ -517,6 +604,7 @@ export class SalePointComponent implements OnInit {
       this.balanceType = 'Payable';
     }
   }
+
   calculateTotalPrice() {
     let totalPrice = 0;
     this.orderList.forEach((element) => {
@@ -524,6 +612,7 @@ export class SalePointComponent implements OnInit {
     });
     this.saleInvoiceIssueForm.get('totalPrice')?.setValue(totalPrice);
   }
+
   submitOrder() {
     if (!this.saleInvoiceIssueForm.valid) {
       this.notificationService.showMessage(
