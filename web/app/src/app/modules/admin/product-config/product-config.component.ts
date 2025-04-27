@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService } from '../../services/notification-service.service';
 import { ProductService } from '../../services/product-service.service';
+import * as JsBarcode from 'jsbarcode'; // Add this import
 
 @Component({
   selector: 'app-product-config',
@@ -49,22 +50,46 @@ export class ProductConfigComponent implements OnInit {
     this.fetchUnitType();
     this.fetchBrandName();
   }
-  fetchProductById(id:any){
+  fetchProductById(id: any) {
+    this.showLoader = true;
     this.productService.fetchProductById(id).subscribe({
-      next:(res)=>{
-        console.log(res);
-        if(res.body){
+      next: (res) => {
+        if (res.body) {
           this.product = res.body.product;
-          // this.notificationService.showMessage("SUCCESS","Product Found","OK",300);
           this.setFormValue();
           this.productAddingForm.get('productCode')?.disable();
-          this.barcodeData = `data:image/png;base64,${res.body.barcode}`;
+          
+          // Generate CODE128 barcode if not provided by backend
+          if (res.body.barcode) {
+            this.barcodeData = `data:image/png;base64,${res.body.barcode}`;
+          } else {
+            this.generateBarcode(this.product.productCode);
+          }
         }
+        this.showLoader = false;
       },
-      error:(err)=>{
-        this.notificationService.showMessage("ERROR","Error Occured","OK",300);
+      error: (err) => {
+        this.notificationService.showMessage("ERROR", "Error Occurred", "OK", 300);
+        this.showLoader = false;
       }
-    })
+    });
+  }
+
+  generateBarcode(code: string) {
+    try {
+      const canvas = document.createElement('canvas');
+      JsBarcode(canvas, code, {
+        format: 'CODE128',
+        width: 2,
+        height: 50,
+        displayValue: false,
+        margin: 10
+      });
+      this.barcodeData = canvas.toDataURL('image/png');
+    } catch (e) {
+      console.error('Barcode generation error:', e);
+      this.barcodeData = null;
+    }
   }
   prepareForm() {
     this.productAddingForm = this.formBuilder.group({
@@ -235,20 +260,74 @@ export class ProductConfigComponent implements OnInit {
   printReport() {
     const printContents = document.getElementById('printable');
     if (printContents) {
-      const win = window.open('', '', 'height=500, width=500');
-      win?.document.write('<html><head><title>Print</title>');
-      // Add some styles here if necessary
-      win?.document.write('</head><body>');
-      win?.document.write(printContents.innerHTML); // Use the innerHTML of the "printable" element
-      win?.document.write('</body></html>');
+      const win = window.open('', '_blank');
+      win?.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Barcode Label</title>
+            <style>
+              @page {
+                size: 1.5in 1in;
+                margin: 0;
+              }
+              body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Courier New', monospace;
+              }
+              .barcode-label {
+                width: 1.5in;
+                height: 1in;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                text-align: center;
+                padding: 2px;
+                box-sizing: border-box;
+              }
+              .barcode-image {
+                width: 100%;
+                height: 40px;
+                object-fit: contain;
+              }
+              .product-code {
+                font-size: 12px;
+                font-weight: bold;
+              }
+              .product-name {
+                font-size: 9px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 100%;
+              }
+              .product-price {
+                font-size: 11px;
+                font-weight: bold;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="barcode-label">
+              <img src="${this.barcodeData}" class="barcode-image" alt="Barcode">
+              <div class="product-code">${this.product?.productCode}</div>
+              <div class="product-name">${this.product?.productName}</div>
+              <div class="product-price">MRP: ${this.product?.sellingPricePerUnit} BDT</div>
+            </div>
+            <script>
+              setTimeout(function() {
+                window.print();
+                window.close();
+              }, 200);
+            </script>
+          </body>
+        </html>
+      `);
       win?.document.close();
-      win?.focus();
-
-      setTimeout(() => { // Timeout for ensuring content load
-        win?.print();
-        win?.close();
-      }, 1000);
     }
   }
+
 }
 

@@ -1,137 +1,172 @@
 <div class="container mt-3">
-    <mat-card>
-        <app-page-loader *ngIf="showLoader"></app-page-loader>
-        <h1>Product Config:</h1>
-        <hr>
-        <form [formGroup]="productAddingForm">
-            <div class="row">
-                <div class="col-md-3">
-                    <h2>Total Stock: <span>{{product?.quantity}}</span></h2>
-                </div>
-                <div class="col-md-3">
-                    <h2>Total Sold: <span>{{product?.quantitySold || 0}}</span></h2>
-                </div>
-                <div class="col-md-3">
-                    <h2>Total Damaged: <span>{{product?.quantityDamaged || 0}}</span></h2>
-                </div>
-                <div class="col-md-3">
-                    <h2>Total Returned: <span>{{product?.quantityReturn || 0}}</span></h2>
-                </div>
-                <div class="col-md-4">
-                    <mat-form-field class="input-field" appearance="outline">
-                        <mat-label>Product Code</mat-label>
-                        <input formControlName="productCode" (change)="checkDuplicateProduct()" placeholder="Product Code" matInput>
-                    </mat-form-field>
-                </div>
-                <div class="col-md-8">
-                    <mat-form-field class="input-field" appearance="outline">
-                        <mat-label>Product Name</mat-label>
-                        <input formControlName="productName" placeholder="Product Name" matInput>
-                    </mat-form-field>
-                </div>
-                <div class="col-md-4">
-                    <mat-form-field class="input-field" appearance="outline">
-                        <mat-label>Brand Name</mat-label>
-                        <mat-select formControlName="brandName">
-                            <mat-option *ngFor="let brand of brandNames" [value]="brand.value">{{brand?.label}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="col-md-4">
-                    <mat-form-field appearance="outline" class="input-field">
-                        <mat-label>Product Category</mat-label>
-                        <mat-select formControlName="productCategory">
-                            <mat-option *ngFor="let cat of categories" [value]="cat.value">{{cat?.label}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="col-md-4">
-                    <mat-form-field appearance="outline" class="input-field">
-                        <mat-label>Unit Type</mat-label>
-                        <mat-select formControlName="unitType">
-                            <mat-option *ngFor="let unit of units" [value]="unit.value">{{unit?.label}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-        
-                <div class="col-md-4">
-                    <mat-form-field appearance="outline" class="input-field">
-                        <mat-label>Packaging Category</mat-label>
-                        <mat-select formControlName="packagingCategory">
-                            <mat-option *ngFor="let unit of packagingCategories" [value]="unit.value">{{unit?.label}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="col-md-4">
-                    <mat-form-field class="input-field" appearance="outline">
-                        <mat-label>Unit Per Package</mat-label>
-                        <input type="number" formControlName="unitPerPackage" placeholder="Unit Per Package" matInput>
-                    </mat-form-field>
-                </div>
-                <div class="col-md-4">
-                    <mat-form-field class="input-field" appearance="outline">
-                        <mat-label>Buying Price</mat-label>
-                        <input type="number" formControlName="costPricePerUnit" placeholder="Buying Price" matInput>
-                    </mat-form-field>
-                </div>
-                <div class="col-md-4">
-                    <mat-form-field class="input-field" appearance="outline">
-                        <mat-label>Selling Price</mat-label>
-                        <input type="number" type="number" formControlName="sellingPricePerUnit" placeholder="Selling Price"
-                            matInput>
-                    </mat-form-field>
-                </div>
-                <div class="col-md-12">
-                    <p style="color: red;font-weight: bold;">{{errMsg}}</p>
-                </div>
-                <div class="col-md-12">
-                    <button (click)="addProduct()" mat-raised-button color="warn">{{isEdit?"Update Product":"Add Product"}}</button>
-                </div>
-            </div>
-        </form>
-        <div *ngIf="isEdit" class="mt-3">
-                <button mat-raised-button color="primary" data-bs-toggle="modal" data-bs-target="#myModal">
-                    Print Barcode
-                </button>
+  <mat-card>
+    <app-page-loader *ngIf="showLoader"></app-page-loader>
+    <h1>Product Config:</h1>
+    <hr />
+    <form [formGroup]="productAddingForm">
+      <div class="row">
+        <div class="col-md-3">
+          <h2>
+            Total Stock: <span>{{ product?.quantity }}</span>
+          </h2>
+        </div>
+        <div class="col-md-3">
+          <h2>
+            Total Sold: <span>{{ product?.quantitySold || 0 }}</span>
+          </h2>
+        </div>
+        <div class="col-md-3">
+          <h2>
+            Total Damaged: <span>{{ product?.quantityDamaged || 0 }}</span>
+          </h2>
+        </div>
+        <div class="col-md-3">
+          <h2>
+            Total Returned: <span>{{ product?.quantityReturn || 0 }}</span>
+          </h2>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field class="input-field" appearance="outline">
+            <mat-label>Product Code</mat-label>
+            <input
+              formControlName="productCode"
+              (change)="checkDuplicateProduct()"
+              placeholder="Product Code"
+              matInput
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-md-8">
+          <mat-form-field class="input-field" appearance="outline">
+            <mat-label>Product Name</mat-label>
+            <input
+              formControlName="productName"
+              placeholder="Product Name"
+              matInput
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field class="input-field" appearance="outline">
+            <mat-label>Brand Name</mat-label>
+            <mat-select formControlName="brandName">
+              <mat-option *ngFor="let brand of brandNames" [value]="brand.value"
+                >{{ brand?.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="input-field">
+            <mat-label>Product Category</mat-label>
+            <mat-select formControlName="productCategory">
+              <mat-option *ngFor="let cat of categories" [value]="cat.value"
+                >{{ cat?.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="input-field">
+            <mat-label>Unit Type</mat-label>
+            <mat-select formControlName="unitType">
+              <mat-option *ngFor="let unit of units" [value]="unit.value"
+                >{{ unit?.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
-    </mat-card>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="input-field">
+            <mat-label>Packaging Category</mat-label>
+            <mat-select formControlName="packagingCategory">
+              <mat-option
+                *ngFor="let unit of packagingCategories"
+                [value]="unit.value"
+                >{{ unit?.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field class="input-field" appearance="outline">
+            <mat-label>Unit Per Package</mat-label>
+            <input
+              type="number"
+              formControlName="unitPerPackage"
+              placeholder="Unit Per Package"
+              matInput
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field class="input-field" appearance="outline">
+            <mat-label>Buying Price</mat-label>
+            <input
+              type="number"
+              formControlName="costPricePerUnit"
+              placeholder="Buying Price"
+              matInput
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field class="input-field" appearance="outline">
+            <mat-label>Selling Price</mat-label>
+            <input
+              type="number"
+              type="number"
+              formControlName="sellingPricePerUnit"
+              placeholder="Selling Price"
+              matInput
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-md-12">
+          <p style="color: red; font-weight: bold">{{ errMsg }}</p>
+        </div>
+        <div class="col-md-12">
+          <button (click)="addProduct()" mat-raised-button color="warn">
+            {{ isEdit ? "Update Product" : "Add Product" }}
+          </button>
+        </div>
+      </div>
+    </form>
+    <div *ngIf="isEdit" class="mt-3">
+      <button
+        mat-raised-button
+        color="primary"
+        data-bs-toggle="modal"
+        data-bs-target="#myModal"
+      >
+        Print Barcode
+      </button>
+    </div>
+  </mat-card>
 </div>
 <!-- The Modal -->
 <div class="modal" id="myModal">
     <div class="modal-dialog">
       <div class="modal-content">
-  
-        <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title">Product Tag</h4>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-  
-        <!-- Modal body -->
         <div class="modal-body">
-            <div id="printable" class="receipt-body">
-                <div style="visibility: visible;" class="receipt-container print-section">
-                    <img style="visibility: visible;" width="120" height="50" *ngIf="barcodeData" [src]="barcodeData" alt="Barcode Image">
-                    <br>
-                    <p style="visibility: visible;">{{product?.productCode}}</p>
-                    <p style="visibility: visible;">{{product?.productName}}</p>
-                    <p style="visibility: visible;">MRP: {{product?.sellingPricePerUnit}} BDT</p>
-                </div>
+          <div id="printable" class="barcode-preview">
+            <div class="barcode-label">
+              <img *ngIf="barcodeData" [src]="barcodeData" class="barcode-image" alt="Barcode">
+              <div class="product-code">{{product?.productCode}}</div>
+              <div class="product-name">{{product?.productName}}</div>
+              <div class="product-price">MRP: {{product?.sellingPricePerUnit}} BDT</div>
             </div>
+          </div>
         </div>
-  
-        <!-- Modal footer -->
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" (click)="printReport()">Print</button>
           <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
         </div>
-  
       </div>
     </div>
   </div>
-  
