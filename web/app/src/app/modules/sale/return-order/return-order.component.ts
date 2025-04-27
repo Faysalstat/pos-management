@@ -209,7 +209,7 @@ export class ReturnOrderComponent implements OnInit {
   //     this.selectedReturnItem.looseQuantity;
   //   this.calculateOrder();
   // }
-  
+
   calculateQuantity() {
     if (!this.selectedProduct) return;
 
@@ -266,9 +266,14 @@ export class ReturnOrderComponent implements OnInit {
     this.isSubmitting = true; // Disable the button
     this.showLoader = true;
     this.returnModel.invoiceId = this.saleInvoice.id;
+    this.returnModel.isWalkingCustomer = this.saleInvoice.isWalkingCustomer;
     this.returnModel.orders = this.returnOrderList;
     this.returnModel.returnType = this.selectedReturnCondition;
-    this.returnModel.cusAcc = this.saleInvoice.customer?.account?.id || 0;
+   
+    this.returnModel.cusAcc = this.saleInvoice.isWalkingCustomer
+      ? 0
+      : this.saleInvoice.customer?.account?.id;
+
     const params: Map<string, any> = new Map();
     params.set('return', this.returnModel);
     this.inventoryService.issueSaleOrderReturn(params).subscribe({
