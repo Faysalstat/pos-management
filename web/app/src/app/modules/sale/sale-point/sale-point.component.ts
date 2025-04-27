@@ -25,6 +25,9 @@ import { NotificationService } from '../../services/notification-service.service
 import { PdfMakeService } from '../../services/pdf-make.service';
 import { ProductService } from '../../services/product-service.service';
 import { Modal } from 'bootstrap'; // This line is only needed if you're importing Bootstrap in a module format
+import { Router } from '@angular/router';
+
+
 
 const openModal = () => {
   const myModal = new Modal(document.getElementById('myModal')!);
@@ -42,6 +45,10 @@ const closeModal = () => {
   styleUrls: ['./sale-point.component.css'],
 })
 export class SalePointComponent implements OnInit {
+  @ViewChild('productCodeInput') productCodeInput!: ElementRef;
+barcodeScannerActive = false;
+barcodeInput = '';
+barcodeTimeout: any;
   @ViewChild('receiptComponent', { static: false, read: ElementRef })
   PrintableReceiptComponent!: ElementRef;
 
@@ -123,6 +130,27 @@ export class SalePointComponent implements OnInit {
     ];
   }
 
+  // ngOnInit(): void {
+  //   this.fetchProducts();
+  //   this.getConfig(COFIGS.SALE_APPROVAL_NEEDED);
+  //   this.userName = localStorage.getItem('personName') || '';
+  //   this.receiptModel.invoiceNo = 'NA';
+  //   this.receiptModel.orders = [];
+  //   this.receiptModel.subTotal = 0;
+  //   this.receiptModel.total = 0;
+  //   this.receiptModel.discount = 0;
+  //   this.receiptModel.issuedBy = this.userName || '';
+  //   openModal();
+  //   // console.log(this.toWords.convert(1239271392))
+
+  //   // Auto-focus barcode input on page load
+  // setTimeout(() => {
+  //   if (this.productCodeInput) {
+  //     this.productCodeInput.nativeElement.focus();
+  //   }
+  // }, 500);
+  // }
+
   ngOnInit(): void {
     this.fetchProducts();
     this.getConfig(COFIGS.SALE_APPROVAL_NEEDED);
@@ -133,8 +161,13 @@ export class SalePointComponent implements OnInit {
     this.receiptModel.total = 0;
     this.receiptModel.discount = 0;
     this.receiptModel.issuedBy = this.userName || '';
-    openModal();
-    // console.log(this.toWords.convert(1239271392))
+  
+    // Auto-focus barcode input on page load
+    setTimeout(() => {
+      if (this.productCodeInput) {
+        this.productCodeInput.nativeElement.focus();
+      }
+    }, 500);
   }
 
   getConfig(configname: any) {
@@ -157,13 +190,30 @@ export class SalePointComponent implements OnInit {
     }
   }
 
+  // onProductCodeInput(event: any) {
+  //   if (event.target.value == '') {
+  //     this.filteredCodeOptions = this.productList;
+  //   } else {
+  //     this.filteredCodeOptions = this._filterCode(event.target.value);
+  //   }
+  // }
+
   onProductCodeInput(event: any) {
-    if (event.target.value == '') {
-      this.filteredCodeOptions = this.productList;
-    } else {
-      this.filteredCodeOptions = this._filterCode(event.target.value);
+    const inputValue = event.target.value;
+    if (inputValue === '') {
+        return;
     }
-  }
+    
+    // Find product by code
+    const product = this.productList.find(p => 
+        p.productCode.toLowerCase() === inputValue.toLowerCase()
+    );
+    
+    if (product) {
+        this.productSelected({ value: product });
+    }
+}
+
   prepareInvoiceIssueForm(formData: any) {
     if (!formData) {
       formData = new OrderIssueDomain();
@@ -337,14 +387,50 @@ export class SalePointComponent implements OnInit {
       product.productCode.toLowerCase().includes(filterValue)
     );
   }
+
+  // productSelected(event: any) {
+  //   this.selectedProduct = event.option.value;
+  //   this.saleInvoiceIssueForm
+  //     .get('productCode')
+  //     ?.setValue(this.selectedProduct.productCode);
+  //   this.saleInvoiceIssueForm
+  //     .get('productName')
+  //     ?.setValue(this.selectedProduct.productName);
+  //   this.orderItem.productId = this.selectedProduct.id;
+  //   this.orderItem.productCode = this.selectedProduct.productCode;
+  //   this.orderItem.productName = this.selectedProduct.productName;
+  //   this.orderItem.unitType = this.selectedProduct.unitType;
+  //   this.orderItem.packagingCategory = this.selectedProduct.packagingCategory;
+  //   this.orderItem.unitPerPackage = this.selectedProduct.unitPerPackage;
+  //   this.orderItem.pricePerUnit = this.selectedProduct.sellingPricePerUnit;
+  //   this.orderItem.buyingPricePerUnit = this.selectedProduct.costPricePerUnit;
+  //   this.orderItem.quantity = this.selectedProduct.quantity;
+  //   this.unitType = this.selectedProduct.unitType;
+  //   // this.availableStock =
+  //   //this.selectedProduct.quantity - this.selectedProduct.quantitySold;
+  //   this.availableStock = this.selectedProduct.quantity;
+
+  //   // Set default quantity to 1 if product is available
+  //   if (this.availableStock > 0) {
+  //     this.orderItem.looseQuantity = 1;
+  //     this.orderItem.packageQuantity = 0; // Reset package quantity
+  //     this.calculateQuantity(); // This will calculate the total price
+  //   } else {
+  //     this.orderItem.looseQuantity = 0;
+  //     this.orderItem.totalOrderPrice = 0;
+  //   }
+  // }
+
   productSelected(event: any) {
-    this.selectedProduct = event.option.value;
-    this.saleInvoiceIssueForm
-      .get('productCode')
-      ?.setValue(this.selectedProduct.productCode);
-    this.saleInvoiceIssueForm
-      .get('productName')
-      ?.setValue(this.selectedProduct.productName);
+    // Handle both manual selection and barcode scan
+    const selectedProduct = event.option ? event.option.value : event.value;
+    
+    if (!selectedProduct) return;
+  
+    this.selectedProduct = selectedProduct;
+    this.saleInvoiceIssueForm.get('productCode')?.setValue(this.selectedProduct.productCode);
+    this.saleInvoiceIssueForm.get('productName')?.setValue(this.selectedProduct.productName);
+    
     this.orderItem.productId = this.selectedProduct.id;
     this.orderItem.productCode = this.selectedProduct.productCode;
     this.orderItem.productName = this.selectedProduct.productName;
@@ -355,20 +441,28 @@ export class SalePointComponent implements OnInit {
     this.orderItem.buyingPricePerUnit = this.selectedProduct.costPricePerUnit;
     this.orderItem.quantity = this.selectedProduct.quantity;
     this.unitType = this.selectedProduct.unitType;
-    // this.availableStock =
-    //this.selectedProduct.quantity - this.selectedProduct.quantitySold;
     this.availableStock = this.selectedProduct.quantity;
-
+  
     // Set default quantity to 1 if product is available
     if (this.availableStock > 0) {
       this.orderItem.looseQuantity = 1;
-      this.orderItem.packageQuantity = 0; // Reset package quantity
-      this.calculateQuantity(); // This will calculate the total price
+      this.orderItem.packageQuantity = 0;
+      this.calculateQuantity();
     } else {
       this.orderItem.looseQuantity = 0;
       this.orderItem.totalOrderPrice = 0;
     }
+  
+    // Focus on quantity field after selection
+    setTimeout(() => {
+      const quantityInput = document.querySelector('input[formControlName="looseQuantity"]') as HTMLInputElement;
+      if (quantityInput) {
+        quantityInput.focus();
+        quantityInput.select();
+      }
+    }, 50);
   }
+
   onCodeInput() {
     this.productList.map((product) => {
       if (product.productCode == this.selectedProductCode) {
@@ -974,4 +1068,63 @@ export class SalePointComponent implements OnInit {
 
     return requestedQuantity > this.availableStock;
   }
+  // Handle key events for barcode scanning
+@HostListener('document:keypress', ['$event'])
+handleKeyboardEvent(event: KeyboardEvent) {
+  if (this.productCodeInput.nativeElement !== document.activeElement) {
+    return;
+  }
+
+  // Check if input is a barcode character (not modifier keys)
+  if (event.key.length === 1) {
+    this.barcodeInput += event.key;
+    
+    // Reset the timer on each keypress
+    if (this.barcodeTimeout) {
+      clearTimeout(this.barcodeTimeout);
+    }
+    
+    // Set timeout to detect end of barcode input
+    this.barcodeTimeout = setTimeout(() => {
+      this.processBarcode(this.barcodeInput);
+      this.barcodeInput = '';
+    }, 100); // Adjust timeout based on your barcode scanner speed
+  }
+}
+
+// Process the scanned barcode
+processBarcode(barcode: string) {
+  // Trim any whitespace or special characters
+  barcode = barcode.trim();
+  
+  if (!barcode) return;
+
+  // Find product by barcode
+  const product = this.productList.find(p => p.productCode === barcode);
+  
+  if (product) {
+    // Set the form values
+    this.saleInvoiceIssueForm.get('productCode')?.setValue(product.productCode);
+    this.saleInvoiceIssueForm.get('productName')?.setValue(product.productName);
+    
+    // Trigger product selection
+    this.productSelected({ option: { value: product } });
+    
+    // Focus on quantity field for quick entry
+    setTimeout(() => {
+      const quantityInput = document.querySelector('input[formControlName="looseQuantity"]') as HTMLInputElement;
+      if (quantityInput) {
+        quantityInput.focus();
+        quantityInput.select();
+      }
+    }, 50);
+  } else {
+    this.notificationService.showErrorMessage(
+      'Product Not Found',
+      `No product found with barcode: ${barcode}`,
+      'OK',
+      2000
+    );
+  }
+}
 }

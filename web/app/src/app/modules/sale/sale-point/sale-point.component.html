@@ -77,9 +77,8 @@
                 </h2>
                 <div class="row">
                     <div class="col-md-3">
-                        <mat-form-field class="input-field" appearance="outline">
+                        <!-- <mat-form-field class="input-field" appearance="outline">
                             <mat-label>Code</mat-label>
-                            <!-- <input type="text" matInput [ngModelOptions]="{standalone:true}" [(ngModel)]="selectedProductCode" (change)="onCodeInput()" > -->
                             <input type="text" matInput formControlName="productCode"
                                 (keyup)="onProductCodeInput($event)" [matAutocomplete]="autoCode">
                             <mat-autocomplete (optionSelected)="productSelected($event)" #autoCode="matAutocomplete">
@@ -87,6 +86,11 @@
                                     {{product.productCode}}
                                 </mat-option>
                             </mat-autocomplete>
+                        </mat-form-field> -->
+                        <mat-form-field class="input-field" appearance="outline">
+                            <mat-label>Code</mat-label>
+                            <input #productCodeInput type="text" matInput formControlName="productCode"
+                                   (keyup)="onProductCodeInput($event)">
                         </mat-form-field>
                     </div>
                     <div class="col-md-9">

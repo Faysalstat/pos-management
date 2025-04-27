@@ -87,3 +87,21 @@ tr, th{
     max-height: 10px;
     overflow: hidden;
 }
+
+/* Add to your component's CSS */
+.input-field .mat-form-field-outline {
+    transition: all 0.3s ease;
+  }
+  
+  .input-field .mat-form-field-outline-thick {
+    border-color: #3f51b5 !important;
+  }
+  
+  .input-field .mat-focused .mat-form-field-outline-thick {
+    border-color: #3f51b5 !important;
+  }
+
+  /* Hide the autocomplete panel */
+.hidden-autocomplete {
+    display: none !important;
+  }
