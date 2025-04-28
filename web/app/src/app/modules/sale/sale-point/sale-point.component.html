@@ -118,10 +118,10 @@
                                             <th>Unit Type</th>
                                             <th>{{orderItem.unitType}}</th>
                                         </tr>
-                                        <tr>
+                                        <!-- <tr>
                                             <th>Stock</th>
                                             <th>{{orderItem.quantity - orderItem.quantitySold}}</th>
-                                        </tr>
+                                        </tr> -->
                                     </thead>
                                 </table>
                             </div>
@@ -132,13 +132,17 @@
                                             <th>Price Rate</th>
                                             <th>{{orderItem.pricePerUnit}} Taka</th>
                                         </tr>
-                                        <tr>
+                                        <!-- <tr>
                                             <th>Packaging Category</th>
                                             <th>{{orderItem.packagingCategory}}</th>
                                         </tr>
                                         <tr>
                                             <th>Unit Per Package</th>
                                             <th>{{orderItem.unitPerPackage}} {{orderItem.unitType}}</th>
+                                        </tr> -->
+                                        <tr>
+                                            <th>Stock</th>
+                                            <th>{{orderItem.quantity - orderItem.quantitySold}}</th>
                                         </tr>
                                     </thead>
                                 </table>

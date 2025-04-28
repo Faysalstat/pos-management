@@ -95,17 +95,17 @@ barcodeTimeout: any;
   tnxDate: Date = new Date();
   customerType: string = 'Walk-IN Customer';
   isSubmitting: boolean = false;
-  @HostListener('document:keydown.enter', ['$event'])
-  handleEnterKey(event: KeyboardEvent) {
-    // 1. Prevent default form submission behavior
-    event.preventDefault();
+  // @HostListener('document:keydown.enter', ['$event'])
+  // handleEnterKey(event: KeyboardEvent) {
+  //   // 1. Prevent default form submission behavior
+  //   event.preventDefault();
 
-    // 2. Check if button would be enabled
-    if (this.canAddOrder()) {
-      // 3. Execute the add order action
-      this.addOrder();
-    }
-  }
+  //   // 2. Check if button would be enabled
+  //   if (this.canAddOrder()) {
+  //     // 3. Execute the add order action
+  //     this.addOrder();
+  //   }
+  // }
   constructor(
     private formBuilder: FormBuilder,
     private clientService: ClientService,
