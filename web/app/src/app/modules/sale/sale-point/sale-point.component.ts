@@ -173,11 +173,12 @@ export class SalePointComponent implements OnInit {
       this.addOrder();
     } else {
       this.notificationService.showErrorMessage(
-        'Not Found',
-        `Product is not found for ${this.orderItem.productCode}`,
+         `<b>Product Not Found</b>`,
+        `Product is not found for <b>${inputValue}</b>`,
         'OK',
         3000
       );
+      this.orderItem = new OrderItem();
     }
   }
 
@@ -219,7 +220,7 @@ export class SalePointComponent implements OnInit {
         'Stock Unavailable',
         `No items are available of ${this.orderItem.productName}`,
         'OK',
-        100
+        3000
       );
     }
 
@@ -554,15 +555,15 @@ export class SalePointComponent implements OnInit {
 
       if (available <= 0) {
         this.notificationService.showErrorMessage(
-          'Stock Unavailable',
-          `No items available of ${this.orderItem.productName}`,
+          `<b>Stock Unavailable</b>`,
+          `No items available of <b>${this.orderItem.productName}</b>`,
           'OK',
           3000
         );
       } else {
         this.notificationService.showErrorMessage(
-          'Stock Exceeded',
-          `Only ${available} units available of ${this.orderItem.productName}`,
+          `<b>Stock Exceeded</b>`,
+          `Only ${available} units available of <b>${this.orderItem.productName}</b>`,
           'OK',
           3000
         );
@@ -820,7 +821,7 @@ export class SalePointComponent implements OnInit {
     if (this.orderItem.quantityOrdered > this.availableStock) {
       this.stockMsg = 'Warning!! Stock Exceeded.';
       this.notificationService.showErrorMessage(
-        'Stock Unavailable',
+        `<b>Stock Unavailable</b>`,
         "You don't have enough Stock of this Product",
         'OK',
         2000
@@ -1059,8 +1060,8 @@ export class SalePointComponent implements OnInit {
       }, 50);
     } else {
       this.notificationService.showErrorMessage(
-        'Product Not Found',
-        `No product found with barcode: ${barcode}`,
+        `<b>Product Not Found</b>`,
+        `No product found with barcode: <b>${barcode}</b>`,
         'OK',
         2000
       );
