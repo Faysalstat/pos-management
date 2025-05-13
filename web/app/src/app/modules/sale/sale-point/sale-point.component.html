@@ -90,7 +90,7 @@
                         <mat-form-field class="input-field" appearance="outline">
                             <mat-label>Code</mat-label>
                             <input #productCodeInput type="text" matInput formControlName="productCode"
-                                   (keyup)="onProductCodeInput($event)">
+                                   (keyup.enter)="onProductCodeInput($event)">
                         </mat-form-field>
                     </div>
                     <div class="col-md-9">
