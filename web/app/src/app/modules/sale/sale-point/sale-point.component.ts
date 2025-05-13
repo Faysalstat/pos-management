@@ -697,6 +697,7 @@ barcodeTimeout: any;
     } else {
       this.balanceType = 'Payable';
     }
+    this.productCodeInput.nativeElement.focus();
   }
 
   calculateTotalPrice() {
