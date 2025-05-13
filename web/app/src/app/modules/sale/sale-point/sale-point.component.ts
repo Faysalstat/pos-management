@@ -27,8 +27,6 @@ import { ProductService } from '../../services/product-service.service';
 import { Modal } from 'bootstrap'; // This line is only needed if you're importing Bootstrap in a module format
 import { Router } from '@angular/router';
 
-
-
 const openModal = () => {
   const myModal = new Modal(document.getElementById('myModal')!);
   myModal.show();
@@ -46,9 +44,9 @@ const closeModal = () => {
 })
 export class SalePointComponent implements OnInit {
   @ViewChild('productCodeInput') productCodeInput!: ElementRef;
-barcodeScannerActive = false;
-barcodeInput = '';
-barcodeTimeout: any;
+  barcodeScannerActive = false;
+  barcodeInput = '';
+  barcodeTimeout: any;
   @ViewChild('receiptComponent', { static: false, read: ElementRef })
   PrintableReceiptComponent!: ElementRef;
 
@@ -95,17 +93,7 @@ barcodeTimeout: any;
   tnxDate: Date = new Date();
   customerType: string = 'Walk-IN Customer';
   isSubmitting: boolean = false;
-  // @HostListener('document:keydown.enter', ['$event'])
-  // handleEnterKey(event: KeyboardEvent) {
-  //   // 1. Prevent default form submission behavior
-  //   event.preventDefault();
 
-  //   // 2. Check if button would be enabled
-  //   if (this.canAddOrder()) {
-  //     // 3. Execute the add order action
-  //     this.addOrder();
-  //   }
-  // }
   constructor(
     private formBuilder: FormBuilder,
     private clientService: ClientService,
@@ -130,27 +118,6 @@ barcodeTimeout: any;
     ];
   }
 
-  // ngOnInit(): void {
-  //   this.fetchProducts();
-  //   this.getConfig(COFIGS.SALE_APPROVAL_NEEDED);
-  //   this.userName = localStorage.getItem('personName') || '';
-  //   this.receiptModel.invoiceNo = 'NA';
-  //   this.receiptModel.orders = [];
-  //   this.receiptModel.subTotal = 0;
-  //   this.receiptModel.total = 0;
-  //   this.receiptModel.discount = 0;
-  //   this.receiptModel.issuedBy = this.userName || '';
-  //   openModal();
-  //   // console.log(this.toWords.convert(1239271392))
-
-  //   // Auto-focus barcode input on page load
-  // setTimeout(() => {
-  //   if (this.productCodeInput) {
-  //     this.productCodeInput.nativeElement.focus();
-  //   }
-  // }, 500);
-  // }
-
   ngOnInit(): void {
     this.fetchProducts();
     this.getConfig(COFIGS.SALE_APPROVAL_NEEDED);
@@ -161,7 +128,7 @@ barcodeTimeout: any;
     this.receiptModel.total = 0;
     this.receiptModel.discount = 0;
     this.receiptModel.issuedBy = this.userName || '';
-  
+
     // Auto-focus barcode input on page load
     setTimeout(() => {
       if (this.productCodeInput) {
@@ -190,29 +157,83 @@ barcodeTimeout: any;
     }
   }
 
-  // onProductCodeInput(event: any) {
-  //   if (event.target.value == '') {
-  //     this.filteredCodeOptions = this.productList;
-  //   } else {
-  //     this.filteredCodeOptions = this._filterCode(event.target.value);
-  //   }
-  // }
-
   onProductCodeInput(event: any) {
     const inputValue = event.target.value;
     if (inputValue === '') {
-        return;
+      return;
     }
-    
+
     // Find product by code
-    const product = this.productList.find(p => 
-        p.productCode.toLowerCase() === inputValue.toLowerCase()
+    const product = this.productList.find(
+      (p) => p.productCode.toLowerCase() === inputValue.toLowerCase()
     );
-    
+
     if (product) {
-        this.productSelected({ value: product });
+      this.productSelected({ value: product });
+      this.addOrder();
+    } else {
+      this.notificationService.showErrorMessage(
+        'Not Found',
+        `Product is not found for ${this.orderItem.productCode}`,
+        'OK',
+        3000
+      );
     }
-}
+  }
+
+  productSelected(event: any) {
+    // Handle both manual selection and barcode scan
+    const selectedProduct = event.option ? event.option.value : event.value;
+
+    if (!selectedProduct) return;
+
+    this.selectedProduct = selectedProduct;
+    this.saleInvoiceIssueForm
+      .get('productCode')
+      ?.setValue(this.selectedProduct.productCode);
+    this.saleInvoiceIssueForm
+      .get('productName')
+      ?.setValue(this.selectedProduct.productName);
+
+    this.orderItem.productId = this.selectedProduct.id;
+    this.orderItem.productCode = this.selectedProduct.productCode;
+    this.orderItem.productName = this.selectedProduct.productName;
+    this.orderItem.unitType = this.selectedProduct.unitType;
+    this.orderItem.packagingCategory = this.selectedProduct.packagingCategory;
+    this.orderItem.unitPerPackage = this.selectedProduct.unitPerPackage;
+    this.orderItem.pricePerUnit = this.selectedProduct.sellingPricePerUnit;
+    this.orderItem.buyingPricePerUnit = this.selectedProduct.costPricePerUnit;
+    this.orderItem.quantity = this.selectedProduct.quantity;
+    this.unitType = this.selectedProduct.unitType;
+    this.availableStock = this.selectedProduct.quantity;
+
+    // Set default quantity to 1 if product is available
+    if (this.availableStock > 0) {
+      this.orderItem.looseQuantity = 1;
+      this.orderItem.packageQuantity = 0;
+      this.calculateQuantity();
+    } else {
+      this.orderItem.looseQuantity = 0;
+      this.orderItem.totalOrderPrice = 0;
+      this.notificationService.showMessage(
+        'Stock Unavailable',
+        `No items are available of ${this.orderItem.productName}`,
+        'OK',
+        100
+      );
+    }
+
+    // Focus on quantity field after selection
+    setTimeout(() => {
+      const quantityInput = document.querySelector(
+        'input[formControlName="looseQuantity"]'
+      ) as HTMLInputElement;
+      if (quantityInput) {
+        quantityInput.focus();
+        quantityInput.select();
+      }
+    }, 100);
+  }
 
   prepareInvoiceIssueForm(formData: any) {
     if (!formData) {
@@ -421,48 +442,6 @@ barcodeTimeout: any;
   //   }
   // }
 
-  productSelected(event: any) {
-    // Handle both manual selection and barcode scan
-    const selectedProduct = event.option ? event.option.value : event.value;
-    
-    if (!selectedProduct) return;
-  
-    this.selectedProduct = selectedProduct;
-    this.saleInvoiceIssueForm.get('productCode')?.setValue(this.selectedProduct.productCode);
-    this.saleInvoiceIssueForm.get('productName')?.setValue(this.selectedProduct.productName);
-    
-    this.orderItem.productId = this.selectedProduct.id;
-    this.orderItem.productCode = this.selectedProduct.productCode;
-    this.orderItem.productName = this.selectedProduct.productName;
-    this.orderItem.unitType = this.selectedProduct.unitType;
-    this.orderItem.packagingCategory = this.selectedProduct.packagingCategory;
-    this.orderItem.unitPerPackage = this.selectedProduct.unitPerPackage;
-    this.orderItem.pricePerUnit = this.selectedProduct.sellingPricePerUnit;
-    this.orderItem.buyingPricePerUnit = this.selectedProduct.costPricePerUnit;
-    this.orderItem.quantity = this.selectedProduct.quantity;
-    this.unitType = this.selectedProduct.unitType;
-    this.availableStock = this.selectedProduct.quantity;
-  
-    // Set default quantity to 1 if product is available
-    if (this.availableStock > 0) {
-      this.orderItem.looseQuantity = 1;
-      this.orderItem.packageQuantity = 0;
-      this.calculateQuantity();
-    } else {
-      this.orderItem.looseQuantity = 0;
-      this.orderItem.totalOrderPrice = 0;
-    }
-  
-    // Focus on quantity field after selection
-    setTimeout(() => {
-      const quantityInput = document.querySelector('input[formControlName="looseQuantity"]') as HTMLInputElement;
-      if (quantityInput) {
-        quantityInput.focus();
-        quantityInput.select();
-      }
-    }, 50);
-  }
-
   onCodeInput() {
     this.productList.map((product) => {
       if (product.productCode == this.selectedProductCode) {
@@ -497,31 +476,7 @@ barcodeTimeout: any;
       this.orderItem.quantityOrdered * this.orderItem.buyingPricePerUnit
     ).toFixed(2);
   }
-  // calculateQuantity() {
-  //   if (!this.orderItem.productId) {
-  //     this.orderItem.quantityOrdered = 0;
-  //     this.orderItem.totalOrderPrice = 0;
-  //     return;
-  //   }
-
-  //   // this.orderItem.quantityOrdered = +(
-  //   //   this.orderItem.packageQuantity * this.orderItem.unitPerPackage +
-  //   //   +this.orderItem.looseQuantity
-  //   // ).toFixed(2);
-  //   // this.checkQuantity();
-  //   // this.calculateOrder();
-  //   const packageQty = Number(this.orderItem.packageQuantity) || 0;
-  //   const looseQty = Number(this.orderItem.looseQuantity) || 0;
-  //   const unitsPerPackage = Number(this.orderItem.unitPerPackage) || 1;
-
-  //   this.orderItem.quantityOrdered = +(
-  //     packageQty * unitsPerPackage +
-  //     looseQty
-  //   ).toFixed(2);
-  //   this.checkQuantity();
-  //   this.calculateOrder();
-  // }
-
+  
   calculateQuantity() {
     if (!this.orderItem.productId) {
       this.orderItem.quantityOrdered = 0;
@@ -566,82 +521,53 @@ barcodeTimeout: any;
       );
   }
 
-  // testing
-
-  // addOrder() {
-  //   if (!this.canAddOrder()) return;
-
-  //   if (
-  //     !this.orderItem.productId ||
-  //     !this.orderItem.quantityOrdered ||
-  //     !this.orderItem.pricePerUnit
-  //   ) {
-  //     return;
-  //   }
-
-  //   this.orderList.push(this.orderItem);
-  //   this.orderItem = new OrderItem();
-
-  //   let totalPrice = 0;
-  //   let totalCost = 0;
-
-  //   this.orderList.map((elem) => {
-  //     totalPrice += elem.totalOrderPrice;
-  //     totalCost += elem.totalOrderCost;
-  //     this.receiptModel.orders.push({
-  //       item: elem.productName,
-  //       rate: elem.pricePerUnit,
-  //       qty: elem.quantityOrdered,
-  //       total: elem.totalOrderPrice,
-  //     });
-  //   });
-
-  //   this.saleInvoiceIssueForm.get('orders')?.setValue(this.orderList);
-  //   this.saleInvoiceIssueForm.get('totalPrice')?.setValue(totalPrice);
-  //   this.saleInvoiceIssueForm.get('totalCost')?.setValue(totalCost);
-  //   this.saleInvoiceIssueForm.get('productName')?.setValue('');
-  //   this.saleInvoiceIssueForm.get('productCode')?.setValue('');
-  //   this.totalPrice = totalPrice;
-  //   this.totalPayableAmount = this.totalPrice - this.previousBalance;
-  //   this.saleInvoiceIssueForm
-  //     .get('totalPaidAmount')
-  //     ?.setValue(this.totalPayableAmount);
-  //   this.calculateSummary();
-
-  //   if (this.totalPayableAmount < 0) {
-  //     this.balanceType = 'Return';
-  //   } else {
-  //     this.balanceType = 'Payable';
-  //   }
-  // }
-
   addOrder() {
     if (!this.canAddOrder()) return;
 
-    if (!this.orderItem.productId || !this.orderItem.quantityOrdered || !this.orderItem.pricePerUnit) {
+    if (
+      !this.orderItem.productId ||
+      !this.orderItem.quantityOrdered ||
+      !this.orderItem.pricePerUnit
+    ) {
       return;
     }
 
     // Check for existing product in orderList
     const existingItemIndex = this.orderList.findIndex(
-      item => item.productId === this.orderItem.productId
+      (item) => item.productId === this.orderItem.productId
     );
 
     // Calculate total requested quantity
-    const requestedQty = existingItemIndex > -1
-      ? this.orderList[existingItemIndex].quantityOrdered + this.orderItem.quantityOrdered
-      : this.orderItem.quantityOrdered;
+    const requestedQty =
+      existingItemIndex > -1
+        ? this.orderList[existingItemIndex].quantityOrdered +
+          this.orderItem.quantityOrdered
+        : this.orderItem.quantityOrdered;
 
     // Stock validation
     if (requestedQty > this.availableStock) {
-      const available = this.availableStock - 
-                       (existingItemIndex > -1 ? this.orderList[existingItemIndex].quantityOrdered : 0);
-      this.notificationService.showErrorMessage(
-        'Stock Exceeded',
-        `Only ${available} units available for ${this.orderItem.productName}`,
-        'OK',
-        3000
-      );
+      const available =
+        this.availableStock -
+        (existingItemIndex > -1
+          ? this.orderList[existingItemIndex].quantityOrdered
+          : 0);
+
+      if (available <= 0) {
+        this.notificationService.showErrorMessage(
+          'Stock Unavailable',
+          `No items available of ${this.orderItem.productName}`,
+          'OK',
+          3000
+        );
+      } else {
+        this.notificationService.showErrorMessage(
+          'Stock Exceeded',
+          `Only ${available} units available of ${this.orderItem.productName}`,
+          'OK',
+          3000
+        );
+      }
+
       return;
     }
 
@@ -649,31 +575,35 @@ barcodeTimeout: any;
       // Update existing item
       const existingItem = this.orderList[existingItemIndex];
       existingItem.quantityOrdered += this.orderItem.quantityOrdered;
-      existingItem.totalOrderPrice = existingItem.quantityOrdered * existingItem.pricePerUnit;
-      existingItem.totalOrderCost = existingItem.quantityOrdered * existingItem.buyingPricePerUnit;
-      
+      existingItem.totalOrderPrice =
+        existingItem.quantityOrdered * existingItem.pricePerUnit;
+      existingItem.totalOrderCost =
+        existingItem.quantityOrdered * existingItem.buyingPricePerUnit;
+
       // Update receipt model
       const receiptItemIndex = this.receiptModel.orders.findIndex(
-        item => item.item === existingItem.productName
+        (item) => item.item === existingItem.productName
       );
       if (receiptItemIndex > -1) {
-        this.receiptModel.orders[receiptItemIndex].qty = existingItem.quantityOrdered;
-        this.receiptModel.orders[receiptItemIndex].total = existingItem.totalOrderPrice;
+        this.receiptModel.orders[receiptItemIndex].qty =
+          existingItem.quantityOrdered;
+        this.receiptModel.orders[receiptItemIndex].total =
+          existingItem.totalOrderPrice;
       }
     } else {
       // Add new item
-      this.orderList.push({...this.orderItem});
+      this.orderList.push({ ...this.orderItem });
       this.receiptModel.orders.push({
         item: this.orderItem.productName,
         rate: this.orderItem.pricePerUnit,
         qty: this.orderItem.quantityOrdered,
-        total: this.orderItem.totalOrderPrice
+        total: this.orderItem.totalOrderPrice,
       });
     }
 
     // Reset for next item
-    this.orderItem = new OrderItem();
-    
+    //this.orderItem = new OrderItem();
+
     // Update totals (keep your existing calculations)
     let totalPrice = 0;
     let totalCost = 0;
@@ -689,7 +619,9 @@ barcodeTimeout: any;
     this.saleInvoiceIssueForm.get('productCode')?.setValue('');
     this.totalPrice = totalPrice;
     this.totalPayableAmount = this.totalPrice - this.previousBalance;
-    this.saleInvoiceIssueForm.get('totalPaidAmount')?.setValue(this.totalPayableAmount);
+    this.saleInvoiceIssueForm
+      .get('totalPaidAmount')
+      ?.setValue(this.totalPayableAmount);
     this.calculateSummary();
 
     if (this.totalPayableAmount < 0) {
@@ -1069,63 +1001,69 @@ barcodeTimeout: any;
 
     return requestedQuantity > this.availableStock;
   }
-  // Handle key events for barcode scanning
-@HostListener('document:keypress', ['$event'])
-handleKeyboardEvent(event: KeyboardEvent) {
-  if (this.productCodeInput.nativeElement !== document.activeElement) {
-    return;
-  }
+  //// Handle key events for barcode scanning
+  // @HostListener('document:keypress', ['$event'])
+  // handleKeyboardEvent(event: KeyboardEvent) {
+  //   if (this.productCodeInput.nativeElement !== document.activeElement) {
+  //     return;
+  //   }
 
-  // Check if input is a barcode character (not modifier keys)
-  if (event.key.length === 1) {
-    this.barcodeInput += event.key;
-    
-    // Reset the timer on each keypress
-    if (this.barcodeTimeout) {
-      clearTimeout(this.barcodeTimeout);
+  //   // Check if input is a barcode character (not modifier keys)
+  //   if (event.key.length === 1) {
+  //     this.barcodeInput += event.key;
+
+  //     // Reset the timer on each keypress
+  //     if (this.barcodeTimeout) {
+  //       clearTimeout(this.barcodeTimeout);
+  //     }
+
+  //     // Set timeout to detect end of barcode input
+  //     this.barcodeTimeout = setTimeout(() => {
+  //       this.processBarcode(this.barcodeInput);
+  //       this.barcodeInput = '';
+  //     }, 100); // Adjust timeout based on your barcode scanner speed
+  //   }
+  // }
+
+  // Process the scanned barcode
+  processBarcode(barcode: string) {
+    // Trim any whitespace or special characters
+    barcode = barcode.trim();
+
+    if (!barcode) return;
+
+    // Find product by barcode
+    const product = this.productList.find((p) => p.productCode === barcode);
+
+    if (product) {
+      // Set the form values
+      this.saleInvoiceIssueForm
+        .get('productCode')
+        ?.setValue(product.productCode);
+      this.saleInvoiceIssueForm
+        .get('productName')
+        ?.setValue(product.productName);
+
+      // Trigger product selection
+      this.productSelected({ option: { value: product } });
+
+      // Focus on quantity field for quick entry
+      setTimeout(() => {
+        const quantityInput = document.querySelector(
+          'input[formControlName="looseQuantity"]'
+        ) as HTMLInputElement;
+        if (quantityInput) {
+          quantityInput.focus();
+          quantityInput.select();
+        }
+      }, 50);
+    } else {
+      this.notificationService.showErrorMessage(
+        'Product Not Found',
+        `No product found with barcode: ${barcode}`,
+        'OK',
+        2000
+      );
     }
-    
-    // Set timeout to detect end of barcode input
-    this.barcodeTimeout = setTimeout(() => {
-      this.processBarcode(this.barcodeInput);
-      this.barcodeInput = '';
-    }, 100); // Adjust timeout based on your barcode scanner speed
   }
-}
-
-// Process the scanned barcode
-processBarcode(barcode: string) {
-  // Trim any whitespace or special characters
-  barcode = barcode.trim();
-  
-  if (!barcode) return;
-
-  // Find product by barcode
-  const product = this.productList.find(p => p.productCode === barcode);
-  
-  if (product) {
-    // Set the form values
-    this.saleInvoiceIssueForm.get('productCode')?.setValue(product.productCode);
-    this.saleInvoiceIssueForm.get('productName')?.setValue(product.productName);
-    
-    // Trigger product selection
-    this.productSelected({ option: { value: product } });
-    
-    // Focus on quantity field for quick entry
-    setTimeout(() => {
-      const quantityInput = document.querySelector('input[formControlName="looseQuantity"]') as HTMLInputElement;
-      if (quantityInput) {
-        quantityInput.focus();
-        quantityInput.select();
-      }
-    }, 50);
-  } else {
-    this.notificationService.showErrorMessage(
-      'Product Not Found',
-      `No product found with barcode: ${barcode}`,
-      'OK',
-      2000
-    );
-  }
-}
 }
