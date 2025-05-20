@@ -70,6 +70,7 @@
 </mat-card>
 <mat-card class="posbody mt-3">
     <form [formGroup]="saleInvoiceIssueForm" (keydown.enter)="$event.preventDefault()">
+        <app-page-loader *ngIf="showLoader"></app-page-loader>
         <div class="row">
             <div class="col-md-8 right-border">
                 <h2 style="font-weight:bold;;">
