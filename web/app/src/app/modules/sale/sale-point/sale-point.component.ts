@@ -703,12 +703,12 @@ export class SalePointComponent implements OnInit {
       params.set('invoice', orderIssueModel);
       this.inventoryService.issueSalesOrder(params).subscribe({
         next: (res) => {
-          this.notificationService.showMessage(
-            'SUCCESS!',
-            'Invoice Created',
-            'OK',
-            2000
-          );
+          // this.notificationService.showMessage(
+          //   'SUCCESS!',
+          //   'Invoice Created',
+          //   'OK',
+          //   2000
+          // );
           // openModal();
           this.receiptModel.invoiceNo = res.body.invoiceNo;
           setTimeout(() => {
@@ -736,6 +736,7 @@ export class SalePointComponent implements OnInit {
       });
     }
   }
+  
   applyFilter(date: any) {
     let newDate = new Date(date);
     return (
