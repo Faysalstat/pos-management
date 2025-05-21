@@ -1,0 +1,49 @@
+# version: '3.8'
+
+# services:
+#   mysql:
+#     image: mysql:8.0
+#     container_name: mysql-container-new  # Changed container name
+#     environment:
+#       MYSQL_ROOT_PASSWORD: rootpassword
+#       MYSQL_DATABASE: vatasolu_retail_demo_db  # Matching your config
+#       MYSQL_USER: vatasolu_retail_demo_admin  # Matching your config
+#       MYSQL_PASSWORD: "&B9k6}B+%g{u"  # Matching your config
+#     ports:
+#       - "3307:3306"  # Changed host port to avoid conflict
+#     volumes:
+#       - mysql_data_new:/var/lib/mysql  # Changed volume name
+#     networks:
+#       - mysql_network_new  # Changed network name
+
+# volumes:
+#   mysql_data_new:  # Changed volume name
+
+# networks:
+#   mysql_network_new:  # Changed network name
+#     driver: bridge
+
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: retail-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: retail_demo_db
+      MYSQL_USER: retail_admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - retail-db-data:/var/lib/mysql
+    networks:
+      - retail-net
+
+volumes:
+  retail-db-data:
+
+networks:
+  retail-net:
