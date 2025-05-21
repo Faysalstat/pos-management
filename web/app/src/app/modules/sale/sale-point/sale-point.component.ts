@@ -741,7 +741,11 @@ export class SalePointComponent implements OnInit {
           //   2000
           // );
           // openModal();
+          
           this.receiptModel.invoiceNo = res.body.invoiceNo;
+          // Set extra charge and reason here as well
+          this.receiptModel.extraCharge = this.saleInvoiceIssueForm.get('extraCharge')?.value || 0;
+          this.receiptModel.extraChargeReason = this.saleInvoiceIssueForm.get('chargeReason')?.value || '';
           setTimeout(() => {
             // Timeout for ensuring content load
             this.printReport();
@@ -950,6 +954,10 @@ export class SalePointComponent implements OnInit {
   //   }
   // }
   printReport() {
+    // Set extra charge and reason before printing
+  this.receiptModel.extraCharge = this.saleInvoiceIssueForm.get('extraCharge')?.value || 0;
+  this.receiptModel.extraChargeReason = this.saleInvoiceIssueForm.get('chargeReason')?.value || '';
+  
     const printContents =
       this.PrintableReceiptComponent.nativeElement.innerHTML;
     const originalContents = document.body.innerHTML;

@@ -95,6 +95,9 @@ export class EditSaleInvoiceComponent implements OnInit {
           }
         }
         this.receiptModel.invoiceNo = this.saleInvoice.invoiceNo;
+        // After fetching invoice details, set these fields on the receipt model
+        this.receiptModel.extraCharge = this.saleInvoice.extraCharge || 0;
+        this.receiptModel.extraChargeReason = this.saleInvoice.chargeReason || '';
         this.receiptModel.orders = this.orderItems;
         this.receiptModel.subTotal = this.saleInvoice?.totalPrice;
         this.receiptModel.total = this.saleInvoice?.totalPayableAmount;

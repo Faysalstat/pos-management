@@ -209,6 +209,8 @@ export class ReceiptBody {
   discount!: number;
   total!: number;
   issuedBy!: string;
+  extraCharge?: number; 
+  extraChargeReason?: string; 
 }
 export interface IOrderBody{
   item:string;
