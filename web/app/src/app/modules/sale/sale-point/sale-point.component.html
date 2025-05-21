@@ -321,7 +321,7 @@
                         <tr>
                             <th></th>
                             <th style="float: right;margin-right: 0;">
-                                <button (click)="submitOrder()" mat-raised-button color="warn" [disabled]="isSubmitting">{{ isSubmitting ? 'Processing...' : 'Submit' }}</button>
+                                <button (click)="submitOrder()" mat-raised-button color="warn" [disabled]="isSubmitting || orderList.length < 1">{{ isSubmitting ? 'Processing...' : 'Submit' }}</button>
                             </th>
                         </tr>
 

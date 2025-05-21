@@ -173,7 +173,7 @@ export class SalePointComponent implements OnInit {
       this.addOrder();
     } else {
       this.notificationService.showErrorMessage(
-         `<b>Product Not Found</b>`,
+        `<b>Product Not Found</b>`,
         `Product is not found for <b>${inputValue}</b>`,
         'OK',
         3000
@@ -239,13 +239,17 @@ export class SalePointComponent implements OnInit {
   prepareInvoiceIssueForm(formData: any) {
     if (!formData) {
       formData = new OrderIssueDomain();
+      // Initialize customerId as null for both cases
+    formData.customerId = null;
     }
+
     this.saleInvoiceIssueForm = this.formBuilder.group({
       id: [formData.id],
       doNo: [formData.doNo],
       invoiceNo: [formData.invoiceNo],
-      customerId: [formData.customerId],
+      // customerId: [formData.customerId],
       // accountId:[formData.accountId,[Validators.required]],
+      customerId: [formData.customerId, this.isWalkingCustomer ? null : [Validators.required]],
       orders: [formData.orders, [Validators.required]],
       productName: [formData.productName],
       productCode: [formData.productCode],
@@ -280,6 +284,7 @@ export class SalePointComponent implements OnInit {
           ?.setValue(this.totalPayableAmount - data);
       });
   }
+
   searchCustomer() {
     if (this.person.contactNo.length < 11) {
       this.isLengthError = true;
@@ -302,6 +307,13 @@ export class SalePointComponent implements OnInit {
             this.customer = res.body.customer;
             this.account = this.customer.account;
             this.previousBalance = this.account.balance;
+
+            // Set the customerId in the form
+            this.saleInvoiceIssueForm
+              .get('customerId')
+              ?.setValue(this.customer.id);
+            this.saleInvoiceIssueForm.updateValueAndValidity(); // Add this line
+
             if (this.account.balance < 0) {
               this.balanceTitle = 'Due';
             } else {
@@ -360,6 +372,7 @@ export class SalePointComponent implements OnInit {
         if (res.body) {
           this.isCustomerExist = true;
           this.saleInvoiceIssueForm.get('customerId')?.setValue(res.body.id);
+          this.saleInvoiceIssueForm.updateValueAndValidity(); // Add this line
           this.receiptModel.customerName = this.person.personName || '';
           this.receiptModel.cutomerContact = this.person.contactNo || '';
           console.log(res.body);
@@ -477,7 +490,7 @@ export class SalePointComponent implements OnInit {
       this.orderItem.quantityOrdered * this.orderItem.buyingPricePerUnit
     ).toFixed(2);
   }
-  
+
   calculateQuantity() {
     if (!this.orderItem.productId) {
       this.orderItem.quantityOrdered = 0;
@@ -642,6 +655,23 @@ export class SalePointComponent implements OnInit {
   }
 
   submitOrder() {
+    // Force form validation check
+    this.saleInvoiceIssueForm.markAllAsTouched();
+
+    // Additional validation for customer
+    if (
+      !this.isWalkingCustomer &&
+      !this.saleInvoiceIssueForm.get('customerId')?.value
+    ) {
+      this.notificationService.showMessage(
+        'CUSTOMER REQUIRED!',
+        'Please select or add a customer first',
+        'OK',
+        2000
+      );
+      return;
+    }
+
     if (!this.saleInvoiceIssueForm.valid) {
       this.notificationService.showMessage(
         'INVALID FORM!',
@@ -651,6 +681,7 @@ export class SalePointComponent implements OnInit {
       );
       return;
     }
+
     if (this.isSubmitting) return; // Prevent multiple clicks
     this.isSubmitting = true; // Disable the button
     this.showLoader = true;
@@ -736,7 +767,7 @@ export class SalePointComponent implements OnInit {
       });
     }
   }
-  
+
   applyFilter(date: any) {
     let newDate = new Date(date);
     return (
@@ -955,26 +986,53 @@ export class SalePointComponent implements OnInit {
 
     this.calculateQuantity();
   }
+
+  // customerTypeChnaged(event: any) {
+  //   this.isCustomerExist = event.checked;
+
+  //   if (event.checked) {
+  //     this.customerType = 'Walk-IN Customer';
+  //     this.person.personName = 'Walk-IN Customer';
+  //     // Clear all validators
+  //     this.saleInvoiceIssueForm.get('customerId')?.clearValidators();
+  //     // Reset the value
+  //     this.saleInvoiceIssueForm.reset();
+  //   } else {
+  //     this.customerType = 'Member';
+  //     this.saleInvoiceIssueForm
+  //       .get('customerId')
+  //       ?.setValidators([Validators.required]);
+  //     // Reset the value
+  //     this.saleInvoiceIssueForm.reset();
+  //   }
+  //   // Update the form control's validation and value state
+  //   this.saleInvoiceIssueForm.updateValueAndValidity();
+  // }
+
   customerTypeChnaged(event: any) {
-    this.isCustomerExist = event.checked;
+    this.isWalkingCustomer = event.checked;
+
     if (event.checked) {
       this.customerType = 'Walk-IN Customer';
       this.person.personName = 'Walk-IN Customer';
-      // Clear all validators
+      // Clear validator and set null for customerId
       this.saleInvoiceIssueForm.get('customerId')?.clearValidators();
-      // Reset the value
-      this.saleInvoiceIssueForm.reset();
+      this.saleInvoiceIssueForm.get('customerId')?.setValue(null);
     } else {
       this.customerType = 'Member';
+      // Set required validator for customerId
       this.saleInvoiceIssueForm
         .get('customerId')
         ?.setValidators([Validators.required]);
-      // Reset the value
-      this.saleInvoiceIssueForm.reset();
+      // Reset to null to trigger validation
+      this.saleInvoiceIssueForm.get('customerId')?.setValue(null);
     }
-    // Update the form control's validation and value state
+
+    // Force validation update
+    this.saleInvoiceIssueForm.get('customerId')?.updateValueAndValidity();
     this.saleInvoiceIssueForm.updateValueAndValidity();
   }
+
   // canAddOrder(): boolean {
   //   return (
   //     !!this.orderItem.productId &&
