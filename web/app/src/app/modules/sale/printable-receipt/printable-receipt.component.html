@@ -44,8 +44,8 @@
           <td style="text-align: right">{{ receiptModel.discount || 0 }}</td>
         </tr>
        <tr *ngIf="receiptModel.extraCharge && receiptModel.extraCharge > 0">
-  <td style="text-align: left" colspan="2">Extra Charge for  {{ receiptModel.extraChargeReason }} </td>
-  <td style="text-align: right">{{ receiptModel.extraCharge }}</td>
+  <td style="text-align: left" colspan="2">Extra Charge <span *ngIf="receiptModel.extraChargeReason">for {{ receiptModel.extraChargeReason }}</span></td>
+  <td style="text-align: right">{{ receiptModel.extraCharge }} </td>
 </tr>
 <!-- <tr *ngIf="receiptModel.extraCharge && receiptModel.extraCharge > 0 && receiptModel.extraChargeReason">
   <td style="text-align: left; font-size: 9px" colspan="3">
