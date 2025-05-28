@@ -134,39 +134,62 @@
       </div>
     </form>
     <div *ngIf="isEdit" class="mt-3">
-      <button
+      <!-- <button
         mat-raised-button
         color="primary"
         data-bs-toggle="modal"
         data-bs-target="#myModal"
       >
         Print Barcode
-      </button>
+      </button> -->
+      
+      <app-barcode
+        [code]="product?.productCode"
+        [price]="product?.sellingPricePerUnit"
+        [shopName]="'Talukdar Baby Shop'"
+        [labelSize]="labelSize"
+      >
+      </app-barcode>
     </div>
   </mat-card>
 </div>
 <!-- The Modal -->
 <div class="modal" id="myModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Product Tag</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div id="printable" class="barcode-preview">
-            <div class="barcode-label">
-              <img *ngIf="barcodeData" [src]="barcodeData" class="barcode-image" alt="Barcode">
-              <div class="product-code">{{product?.productCode}}</div>
-              <div class="product-name">{{product?.productName}}</div>
-              <div class="product-price">MRP: {{product?.sellingPricePerUnit}} TK</div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Product Tag</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="printable" class="barcode-preview">
+          <div class="barcode-label">
+            <img
+              *ngIf="barcodeData"
+              [src]="barcodeData"
+              class="barcode-image"
+              alt="Barcode"
+            />
+            <div class="product-code">{{ product?.productCode }}</div>
+
+            <div class="product-price">
+              {{ product?.sellingPricePerUnit }} TK
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" (click)="printReport()">Print</button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="printReport()">
+          Print
+        </button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+          Close
+        </button>
       </div>
     </div>
   </div>
+</div>

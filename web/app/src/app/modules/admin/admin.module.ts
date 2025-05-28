@@ -22,7 +22,8 @@ import { AddEmployeePanelComponent } from './add-employee-panel/add-employee-pan
 import { AssetsManagementComponent } from './assets-management/assets-management.component';
 import { LoanApprovalDetailsComponent } from './loan-approval-details/loan-approval-details.component';
 import { ProfitCalculationComponent } from './profit-calculation/profit-calculation.component';
-
+import { BarcodeComponent } from './product-config/barcode/barcode.component';
+import { NgxBarcodeModule } from 'ngx-barcode';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { ProfitCalculationComponent } from './profit-calculation/profit-calculat
     AddEmployeePanelComponent,
     AssetsManagementComponent,
     LoanApprovalDetailsComponent,
-    ProfitCalculationComponent
+    ProfitCalculationComponent,
+    BarcodeComponent
   ],
   imports: [
     CommonModule,
@@ -51,6 +53,7 @@ import { ProfitCalculationComponent } from './profit-calculation/profit-calculat
     MatIconModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxBarcodeModule
   ],
   providers: [
     AdminAuthGuard

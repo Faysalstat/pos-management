@@ -1,0 +1,26 @@
+<!-- barcode.component.html -->
+<div class="label" [class.small]="labelSize === 'small'" [class.large]="labelSize === 'large'" [id]="'label-' + code">
+  <div class="shop-name">{{ shopName }}</div>
+  <div class="price">{{ price | number}} TK</div>
+  <div class="barcode-container">
+    <ngx-barcode
+      [bc-format]="'CODE128'"
+      [bc-value]="code"
+      [bc-width]="labelSize === 'small' ? 1 : 1.2"
+      [bc-height]="labelSize === 'small' ? 15 : 25"
+      [bc-font-size]="10"
+      [bc-display-value]="false"
+      [bc-margin]="0"
+      [bc-margin-top]="0"
+      [bc-margin-bottom]="0"
+      [bc-margin-left]="0"
+      [bc-text-margin]="0"
+      [bc-margin-right]="0">
+    </ngx-barcode>
+    <div class="barcode-number">{{ code }}</div>
+  </div>
+</div>
+
+<button *ngIf="showPrintButton" class="no-print" mat-raised-button color="primary" (click)="printLabel()">
+  Print Label
+</button>

@@ -21,6 +21,7 @@ export class ProductConfigComponent implements OnInit {
   product!:any;
   errMsg:string ='';
   barcodeData:any;
+  labelSize: 'small' | 'large' = 'large'; // Default label size
   constructor(
     private activatedRoute:ActivatedRoute,
     private formBuilder: FormBuilder,

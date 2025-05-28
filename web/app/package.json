@@ -67,6 +67,7 @@
     "karma-jasmine-html-reporter": "~1.7.0",
     "postcss": "^8.4.21",
     "postcss-loader": "^7.0.2",
-    "typescript": "~4.5.2"
+    "typescript": "~4.5.2",
+    "webpack": "^5.99.9"
   }
 }
