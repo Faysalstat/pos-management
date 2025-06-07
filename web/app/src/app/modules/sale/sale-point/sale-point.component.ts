@@ -831,17 +831,26 @@ export class SalePointComponent implements OnInit {
   showPositive(number: any) {
     return Math.abs(Number(number));
   }
+
   removeOrder(index: any) {
     let removedOrder = this.orderList[index];
     this.orderList.splice(index, 1);
+
+     // Remove from receiptModel.orders at the same index
+    this.receiptModel.orders.splice(index, 1);
+
+    // Recalculate totals
     let totalPrice = 0;
     this.orderList.map((elem) => {
       totalPrice += elem.totalOrderPrice;
     });
+
     this.saleInvoiceIssueForm.get('orders')?.setValue(this.orderList);
     this.saleInvoiceIssueForm.get('totalPrice')?.setValue(totalPrice);
     this.totalPrice = totalPrice;
+
     this.calculateSummary();
+
     if (this.isWalkingCustomer) {
       this.saleInvoiceIssueForm
         .get('totalPaidAmount')
