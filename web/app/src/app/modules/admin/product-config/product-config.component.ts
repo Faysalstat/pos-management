@@ -170,7 +170,7 @@ export class ProductConfigComponent implements OnInit {
       costPricePerUnit:this.product.costPricePerUnit|| "",
       sellingPricePerUnit:this.product.sellingPricePerUnit|| "",
       packagingCategory:this.product.packagingCategory|| "",
-      unitPerPackage:this.product.unitPerPackage|| "",
+      unitPerPackage:this.product.unitPerPackage|| 0,
     });
   }
 

@@ -253,7 +253,7 @@
                             <th style="text-align:right;">
                                 <mat-form-field class="input-field" appearance="fill">
                                     <input type="number" pInputText formControlName="rebate"
-                                        (change)="calculateSummary()" placeholder="Discount Amount" matInput>
+                                        (input)="calculateSummary()" placeholder="Discount Amount" matInput>
                                 </mat-form-field>
                             </th>
                         </tr>
@@ -262,7 +262,7 @@
                             <th style="text-align:right;">
                                 <mat-form-field class="input-field" appearance="fill">
                                     <input type="number" pInputText formControlName="extraCharge"
-                                        (change)="calculateSummary()" placeholder="Extra Charge" matInput>
+                                        (input)="calculateSummary()" placeholder="Extra Charge" matInput>
                                 </mat-form-field>
                             </th>
                         </tr>
