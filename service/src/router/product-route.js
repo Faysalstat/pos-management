@@ -8,6 +8,7 @@ router.post('/addpackagingcategory',productController.addPackagingCategory);
 router.post('/addunittype',productController.addUnitType);
 router.post('/addbrandname',productController.addBrandName);
 router.get('/getallproduct',productController.fetchAllProduct);
+router.get('/getallproductname', productController.fetchAllProductNames);
 router.get('/getallpackagingcategory',productController.fetchPackagingCategory);
 router.get('/getallproductcategory',productController.fetchProductCategory);
 router.get('/getallunittype',productController.fetchUnitTypes);

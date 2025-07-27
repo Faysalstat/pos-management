@@ -55,6 +55,36 @@ exports.fetchAllProduct = async (req, res, next) => {
     });
   }
 };
+exports.fetchAllProductNames = async (req, res, next) => {
+  try {
+    // Get clientId from query parameters
+    const clientId = req.query.clientId;
+    
+    if (!clientId) {
+      return res.status(400).json({
+        success: false,
+        message: "Client ID is required as query parameter",
+        data: null
+      });
+    }
+
+    // Call service with just the clientId
+    const productNames = await productService.getProductNamesByClient(clientId);
+    
+    return res.status(200).json({
+      success: true,
+      message: "Product names fetched successfully",
+      body: productNames,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error: " + error.message,
+      body: null,
+    });
+  }
+};
+
 exports.fetchProductsForDropDown = async (req, res, next) => {
   try {
     let productList = await productService.fetchProductsForDropDown(req);

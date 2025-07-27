@@ -522,6 +522,7 @@ export class SalePointComponent implements OnInit {
     this.receiptModel.subTotal = this.totalPrice;
     this.receiptModel.total = this.totalPayableAmount;
     this.receiptModel.discount = this.saleInvoiceIssueForm.get('rebate')?.value;
+    this.receiptModel.previousBalance = this.previousBalance;
     // if (this.isWalkingCustomer) {
     //   this.saleInvoiceIssueForm
     //     .get('totalPaidAmount')

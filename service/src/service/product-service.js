@@ -44,6 +44,9 @@ exports.fetchAllProduct = async (req) => {
   if (params.brandName && params.brandName != "") {
     query.brandName = params.brandName;
   }
+  if (params.productName && params.productName != "") {
+    query.productName = params.productName;
+  }
   if (params.categoryName && params.categoryName != "") {
     query.productCategory = params.categoryName;
   }
@@ -69,6 +72,41 @@ exports.fetchAllProduct = async (req) => {
     throw new Error(error);
   }
 };
+
+exports.getProductNamesByClient = async (clientId) => {
+  try {
+    const products = await Product.findAll({
+      where: { clientId },
+      attributes: ['productName'],
+      raw: true,
+    });
+    return products.map(product => product.productName);
+  } catch (error) {
+    throw new Error("Database error: " + error.message);
+  }
+};
+exports.fetchAllProductNames = async (req) => {
+  const { clientId } = req.body;
+
+  if (!clientId) {
+    throw new Error("Client ID not provided");
+  }
+
+  try {
+    const products = await Product.findAll({
+      where: { clientId },
+      attributes: ['productName'], // Only fetch productName
+      // raw: true, // Returns plain JSON instead of Sequelize model instances
+    });
+
+    // Extract product names into an array
+    const productNames = products.map(product => product.productName);
+    return productNames;
+  } catch (error) {
+    throw new Error(`Failed to fetch product names: ${error.message}`);
+  }
+};
+
 exports.fetchPackagingCategory = async (req) => {
   let params = req.query;
   let clientId;

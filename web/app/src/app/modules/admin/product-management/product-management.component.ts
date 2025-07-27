@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../services/notification-service.service';
 import { ProductService } from '../../services/product-service.service';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-product-management',
@@ -17,9 +18,14 @@ export class ProductManagementComponent implements OnInit {
   productList!: any[];
   categories:any[] = [];
   brandName: string = '';
+  productName: string = '';
   categoryName: string = '';
   code: string = '';
   showLoader = false;
+  productNames: any [] = [];
+  filteredProductNames: string[] = [];
+  searchInput$ = new Subject<string>();
+
   constructor(
     private productService: ProductService,
     private notificationService: NotificationService,
@@ -28,8 +34,40 @@ export class ProductManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchProductCategory();
+    this.fetchProductNames();
     this.fetchAllProducts();
+
+     // Setup debounce for product name search
+    this.searchInput$
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(searchTerm => {
+        this.filterProductNames(searchTerm);
+      });
   }
+
+onProductNameInput(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  this.searchInput$.next(input.value.trim().toLowerCase());
+}
+
+  filterProductNames(searchTerm: string): void {
+  if (!searchTerm) {
+    this.filteredProductNames = [...this.productNames];
+    return;
+  }
+  this.filteredProductNames = this.productNames.filter(name =>
+    name.toLowerCase().includes(searchTerm)
+  );
+}
+
+onProductSelected(selectedName: string): void {
+  this.productName = selectedName;
+  this.fetchAllProducts(); // Trigger product list refresh
+}
+
   fetchProductCategory(){
     this.categories = [{ label: 'Select Category', value: '' }];
     this.productService.fetchAllProductCategory().subscribe({
@@ -47,12 +85,41 @@ export class ProductManagementComponent implements OnInit {
     })
   }
 
+  fetchProductNames(): void {
+  this.productService.fetchAllProductNames().subscribe({
+    next: (res) => {
+      if (Array.isArray(res.body)) {
+        this.productNames = res.body;
+        this.filteredProductNames = [...res.body]; // Initialize filtered list
+      } else {
+        this.productNames = [];
+        this.filteredProductNames = [];
+        this.notificationService.showErrorMessage(
+          'ERROR',
+          'Product names response is not an array',
+          'OK',
+          500
+        );
+      }
+    },
+    error: (err) => {
+      this.notificationService.showErrorMessage(
+        'ERROR',
+        'Failed to load product names',
+        'OK',
+        500
+      );
+    },
+  });
+}
+
   fetchAllProducts() {
     const params: Map<string, any> = new Map();
     this.offset = this.offset;
     params.set('offset', this.offset);
     params.set('limit', this.pageSize);
     params.set('brandName', this.brandName);
+    params.set('productName', this.productName);
     params.set('categoryName', this.categoryName);
     params.set('code', this.code);
     this.productService.fetchAllProduct(params).subscribe({
@@ -64,6 +131,7 @@ export class ProductManagementComponent implements OnInit {
       },
     });
   }
+
   pageChange(event:any){
     this.pageSize = event.pageSize;
     this.offset = this.pageSize * event.pageIndex;
@@ -87,6 +155,7 @@ export class ProductManagementComponent implements OnInit {
   }
   refreshFilter(){
     this.brandName = '';
+    this.productName = '';
     this.categoryName = '';
     this.code = '';
     this.fetchAllProducts();

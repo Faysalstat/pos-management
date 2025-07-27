@@ -5,6 +5,7 @@ export const ProductUrls = {
   ADD_PRODUCT: BASE_URL + '/product/addproduct',
   DELETE_PRODUCT: BASE_URL + '/product/delete-product',
   FETCH_ALL_PRODUCT: BASE_URL + '/product/getallproduct',
+  FETCH_ALL_PRODUCT_NAMES: BASE_URL + '/product/getallproductname',
   FETCH_ALL_PACKAGING_CATEGORY: BASE_URL + '/product/getallpackagingcategory',
   FETCH_ALL_PRODUCT_CATEGORY: BASE_URL + '/product/getallproductcategory',
   FETCH_ALL_UNIT_TYPE: BASE_URL + '/product/getallunittype',

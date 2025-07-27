@@ -39,15 +39,31 @@
                     <td style="text-align:left;" colspan="2">Tax</td>
                     <td style="text-align:sright;">{{receiptModel.tax}}</td>
                 </tr> -->
+        <tr
+          *ngIf="
+            receiptModel.previousBalance && receiptModel.previousBalance !== 0
+          "
+        >
+          <td style="text-align: left" colspan="2">
+            Previous {{ receiptModel.previousBalance < 0 ? "Due" : "Balance" }}
+          </td>
+          <td style="text-align: right">
+            {{ receiptModel.previousBalance | number : "1.2-2" }}
+          </td>
+        </tr>
         <tr>
           <td style="text-align: left" colspan="2">Discount</td>
           <td style="text-align: right">{{ receiptModel.discount || 0 }}</td>
         </tr>
-       <tr *ngIf="receiptModel.extraCharge && receiptModel.extraCharge > 0">
-  <td style="text-align: left" colspan="2"><span *ngIf="receiptModel.extraChargeReason"> {{ receiptModel.extraChargeReason }}</span></td>
-  <td style="text-align: right">{{ receiptModel.extraCharge }} </td>
-</tr>
-<!-- <tr *ngIf="receiptModel.extraCharge && receiptModel.extraCharge > 0 && receiptModel.extraChargeReason">
+        <tr *ngIf="receiptModel.extraCharge && receiptModel.extraCharge > 0">
+          <td style="text-align: left" colspan="2">
+            <span *ngIf="receiptModel.extraChargeReason">
+              {{ receiptModel.extraChargeReason }}</span
+            >
+          </td>
+          <td style="text-align: right">{{ receiptModel.extraCharge }}</td>
+        </tr>
+        <!-- <tr *ngIf="receiptModel.extraCharge && receiptModel.extraCharge > 0 && receiptModel.extraChargeReason">
   <td style="text-align: left; font-size: 9px" colspan="3">
     Reason: {{ receiptModel.extraChargeReason }}
   </td>
@@ -55,6 +71,15 @@
         <tr>
           <td style="text-align: left" colspan="2">Total</td>
           <td style="text-align: right">{{ receiptModel.total }}</td>
+        </tr>
+        <tr
+          *ngIf="
+            receiptModel.totalPaid !== undefined &&
+            receiptModel.totalPaid !== null
+          "
+        >
+          <td style="text-align: left" colspan="2">Total Paid</td>
+          <td style="text-align: right">{{ receiptModel.totalPaid }}</td>
         </tr>
       </table>
     </div>

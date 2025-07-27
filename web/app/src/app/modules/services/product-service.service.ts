@@ -20,10 +20,22 @@ export class ProductService {
     params = params.append('offset',queryParams.get('offset'));
     params = params.append('limit',queryParams.get('limit'));
     params = params.append('brandName',queryParams.get('brandName').trim());
+    params = params.append('productName',queryParams.get('productName').trim());
     params = params.append('categoryName',queryParams.get('categoryName').trim());
     params = params.append('code',queryParams.get('code').trim());
     params = params.append('clientId',localStorage.getItem('clientId') || "");
     return this.http.get(ProductUrls.FETCH_ALL_PRODUCT,{params:params});
+  }
+
+fetchAllProductNames(): Observable<any> {
+    const clientId = localStorage.getItem('clientId');
+    if (!clientId) {
+      throw new Error('Client ID not found in localStorage');
+    }
+ 
+    // Using GET with query parameters
+    const params = new HttpParams().set('clientId', clientId);
+    return this.http.get<string[]>(ProductUrls.FETCH_ALL_PRODUCT_NAMES, { params });
   }
 
   public fetchAllProductForDropDown(): Observable<any> {

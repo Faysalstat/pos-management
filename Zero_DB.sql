@@ -29,7 +29,7 @@ INSERT INTO `appconfig` (`configName`, `value`, `clientId`, `createdAt`, `update
 ('SALE_APPROVAL_NEEDED', '0', 1, NOW(), NOW()), 
 ('TRANSACTION_APPROVAL_NEEDED', '0', 1, NOW(), NOW()),
 ('EXPENSE_APPROVAL_NEEDED', '0', 1, NOW(), NOW()),
-('SHOP_NAME', 'Baby Shop', 1, NOW(), NOW());
+('SHOP_NAME', 'Talukdar Baby Shop', 1, NOW(), NOW());
 
 
 INSERT INTO `person` (`personName`, `contactNo`, `personAddress`, `clientId`, `createdAt`, `updatedAt`) VALUES ('Md Monir Hossain', '01721558135','Homna, Cumilla',1, NOW(), NOW());
