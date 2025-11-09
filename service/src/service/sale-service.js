@@ -39,7 +39,10 @@ exports.issueSaleOrder = async (req) => {
   } else {
     throw new Error("Client ID not provided");
   }
-
+  if(payload.isWalkingCustomer==true){
+    //replace customer id with a default customerId
+    payload.customerId = null;
+  }
   let orderIssueModel = {};
   let orders = payload.orders;
   let tnxDate = new Date();
