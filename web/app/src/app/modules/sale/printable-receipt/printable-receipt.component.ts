@@ -34,4 +34,7 @@ export class PrintableReceiptComponent implements OnInit {
     };
     return date.toLocaleString('en-US', options);
   }
+  showPositive(number: any) {
+    return Math.abs(Number(number));
+  }
 }

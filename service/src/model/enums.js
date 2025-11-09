@@ -27,6 +27,8 @@ const ACCOUNT_TYPES = Object.freeze({
   DRAWING_GL: "DrawingGL",
   LOAN_GL: "LoanGL",
   LIABILITY_GL: "LiabilityGL",
+  CUSTOMER_RETURN_GL: "CustomerReturnGL",
+  SUPPLIER_RETURN_GL: "SupplierReturnGL",
 })
 
 const APPCONFIGURATIONS = Object.freeze({

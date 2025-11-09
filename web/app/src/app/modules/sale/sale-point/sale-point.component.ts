@@ -128,7 +128,8 @@ export class SalePointComponent implements OnInit {
     this.receiptModel.total = 0;
     this.receiptModel.discount = 0;
     this.receiptModel.issuedBy = this.userName || '';
-
+    this.receiptModel.totalDue = 0;
+    this.receiptModel.previousBalance = 0;
     // Auto-focus barcode input on page load
     setTimeout(() => {
       if (this.productCodeInput) {
@@ -296,12 +297,12 @@ export class SalePointComponent implements OnInit {
     this.clientService.getClientByContactNo(this.person.contactNo).subscribe({
       next: (res) => {
         if (res.body) {
-          this.notificationService.showMessage(
-            'SUCCESS!',
-            'Person Found',
-            'OK',
-            100
-          );
+          // this.notificationService.showMessage(
+          //   'SUCCESS!',
+          //   'Person Found',
+          //   'OK',
+          //   100
+          // );
           this.person = res.body;
           if (res.body.customer) {
             this.customer = res.body.customer;
@@ -327,21 +328,59 @@ export class SalePointComponent implements OnInit {
             this.receiptModel.cutomerContact =
               this.customer.person.contactNo || '';
             this.isCustomerExist = true;
+
+            // RECALCULATE TOTALS AFTER CUSTOMER CHANGE
+            this.calculateSummary();
+
           } else {
             this.errMsg =
               '** This person is not a Customer, Please Add as a Customer';
             this.isCustomerExist = false;
+
+            // Reset customer-related values
+          this.previousBalance = 0;
+          this.account.balance = 0;
+          this.balanceTitle = 'Balance';
+          this.saleInvoiceIssueForm.get('customerId')?.setValue(null);
+          
+          // RECALCULATE TOTALS
+          this.calculateSummary();
           }
         } else {
           this.person.personAddress = '';
           this.person.personName = '';
           this.person.id = 0;
           this.isCustomerExist = false;
+          
+          // Reset customer-related values
+          this.previousBalance = 0;
+          this.account.balance = 0;
+          this.balanceTitle = 'Balance';
+          this.saleInvoiceIssueForm.get('customerId')?.setValue(null);
+          
+          // RECALCULATE TOTALS
+          this.calculateSummary();
+          this.notificationService.showMessage(
+          'ERROR!',
+          'Customer is not Found',
+          'OK',
+          2000
+        );
           return;
         }
       },
       error: (err) => {
         this.isCustomerExist = false;
+
+        // Reset customer-related values on error
+        this.previousBalance = 0;
+        this.account.balance = 0;
+        this.balanceTitle = 'Balance';
+        this.saleInvoiceIssueForm.get('customerId')?.setValue(null);
+        
+        // RECALCULATE TOTALS
+        this.calculateSummary();
+
         this.notificationService.showMessage(
           'ERROR!',
           'Customer Found Failed' + err.message,
@@ -747,6 +786,8 @@ export class SalePointComponent implements OnInit {
           // Set extra charge and reason here as well
           this.receiptModel.extraCharge = this.saleInvoiceIssueForm.get('extraCharge')?.value || 0;
           this.receiptModel.extraChargeReason = this.saleInvoiceIssueForm.get('chargeReason')?.value || '';
+          this.receiptModel.totalPaid = this.saleInvoiceIssueForm.get('totalPaidAmount')?.value || 0;
+          this.receiptModel.totalDue = this.receiptModel.total - this.receiptModel.totalPaid
           setTimeout(() => {
             // Timeout for ensuring content load
             this.printReport();

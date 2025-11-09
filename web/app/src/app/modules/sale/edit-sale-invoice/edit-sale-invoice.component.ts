@@ -39,6 +39,7 @@ export class EditSaleInvoiceComponent implements OnInit {
   saleOrdersForReduce!: any[];
   orderItems:IOrderBody[] = [];
   receiptModel:ReceiptBody;
+  balanceTitle: string = 'Balance';
   constructor(
     private route: Router,
     private activatedRoute: ActivatedRoute,
@@ -63,62 +64,145 @@ export class EditSaleInvoiceComponent implements OnInit {
       this.fetchInvoiceDetailsByID();
     });
   }
+  // fetchInvoiceDetailsByID() {
+  //   this.inventoryService.fetchSaleInvoiceById(this.id).subscribe({
+  //     next: (res) => {
+  //       console.log(res.body);
+  //       this.customer = res.body.customer;
+  //       this.saleOrders = res.body.orders;
+  //       this.payment.invoiceId = this.id;
+  //       this.saleInvoice = res.body;
+  //       this.totalPaid = res.body.totalPaidAmount || 0;
+  //       this.duePayment = res.body.duePayment;
+  //       this.saleInvoice.previousBalance = res.body.previousBalance;
+  //       this.rebate = res.body.rebate;
+  //       this.comment = res.body.comment;
+  //       if (this.saleInvoice.previousBalance < 0) {
+  //         this.isDue = true;
+  //         this.balanceTitle = 'Due';
+  //       }
+  //       else{
+  //         this.balanceTitle = 'Balance';
+  //       }
+  //       this.saleOrdersForSchedule = [];
+  //       this.saleOrdersForReduce = [];
+  //       this.saleOrders.map((item)=>{
+  //         this.orderItems.push({
+  //           item: item.product.productName,
+  //           rate: item.pricePerUnit,
+  //           qty: item.quantityOrdered,
+  //           total: item.totalPrice,
+  //         })
+  //       })
+  //       for (let i = 0; i < this.saleOrders.length; i++) {
+  //         if (this.saleOrders[i].deliveryStatus == 'PENDING') {
+  //           this.isPending = true;
+  //           break;
+  //         }
+  //       }
+  //       this.receiptModel.invoiceNo = this.saleInvoice.invoiceNo;
+  //       // After fetching invoice details, set these fields on the receipt model
+  //       this.receiptModel.extraCharge = this.saleInvoice.extraCharge || 0;
+  //       this.receiptModel.extraChargeReason = this.saleInvoice.chargeReason || '';
+  //       this.receiptModel.orders = this.orderItems;
+  //       this.receiptModel.subTotal = this.saleInvoice?.totalPrice || 0;
+  //       this.receiptModel.total = this.saleInvoice?.totalPayableAmount || 0;
+  //       this.receiptModel.discount = this.saleInvoice?.rebate || 0;
+  //       this.receiptModel.issuedBy = localStorage.getItem('personName') || '';
+  //       this.receiptModel.customerName = this.customer?.person?.personName;
+  //       this.receiptModel.cutomerContact = this.customer?.person?.contactNo;
+  //       //this.receiptModel.totalPaid = Number(this.saleInvoice.totalPaidAmount) 
+  //       this.receiptModel.totalDue = Number(this.receiptModel.total) - Number(this.receiptModel.totalPaid);
+        
+  //       this.saleOrders.map((elem) => {
+  //         if (elem.deliveryStatus != 'DELIVERED') {
+  //           this.saleOrdersForSchedule.push(elem);
+  //         }
+  //         if (elem.state == 'SOLD') {
+  //           this.saleOrdersForReduce.push(elem);
+  //         }
+  //       });
+  //     },
+  //     error: (err) => {
+  //       this.notificationService.showMessage('ERROR', err.message, 'OK', 1000);
+  //     },
+  //   });
+  // }
+
   fetchInvoiceDetailsByID() {
-    this.inventoryService.fetchSaleInvoiceById(this.id).subscribe({
-      next: (res) => {
-        console.log(res.body);
-        this.customer = res.body.customer;
-        this.saleOrders = res.body.orders;
-        this.payment.invoiceId = this.id;
-        this.saleInvoice = res.body;
-        this.totalPaid = res.body.totalPaid;
-        this.duePayment = res.body.duePayment;
-        this.rebate = res.body.rebate;
-        this.comment = res.body.comment;
-        if (this.saleInvoice.duePayment > 0) {
-          this.isDue = true;
-        }
-        this.saleOrdersForSchedule = [];
-        this.saleOrdersForReduce = [];
-        this.saleOrders.map((item)=>{
-          this.orderItems.push({
-            item: item.product.productName,
-            rate: item.pricePerUnit,
-            qty: item.quantityOrdered,
-            total: item.totalPrice,
-          })
+  this.inventoryService.fetchSaleInvoiceById(this.id).subscribe({
+    next: (res) => {
+      console.log(res.body);
+      this.customer = res.body.customer;
+      this.saleOrders = res.body.orders;
+      this.payment.invoiceId = this.id;
+      this.saleInvoice = res.body;
+      this.totalPaid = res.body.totalPaidAmount || 0;
+      this.duePayment = res.body.duePayment;
+      this.saleInvoice.previousBalance = res.body.previousBalance;
+      this.rebate = res.body.rebate;
+      this.comment = res.body.comment;
+      
+      if (this.saleInvoice.previousBalance < 0) {
+        this.isDue = true;
+        this.balanceTitle = 'Due';
+      } else {
+        this.balanceTitle = 'Balance';
+      }
+      
+      this.saleOrdersForSchedule = [];
+      this.saleOrdersForReduce = [];
+      this.orderItems = []; // Reset orderItems to avoid duplication
+      
+      this.saleOrders.map((item) => {
+        this.orderItems.push({
+          item: item.product.productName,
+          rate: item.pricePerUnit,
+          qty: item.quantityOrdered,
+          total: item.totalPrice,
         })
-        for (let i = 0; i < this.saleOrders.length; i++) {
-          if (this.saleOrders[i].deliveryStatus == 'PENDING') {
-            this.isPending = true;
-            break;
-          }
+      });
+      
+      for (let i = 0; i < this.saleOrders.length; i++) {
+        if (this.saleOrders[i].deliveryStatus == 'PENDING') {
+          this.isPending = true;
+          break;
         }
-        this.receiptModel.invoiceNo = this.saleInvoice.invoiceNo;
-        // After fetching invoice details, set these fields on the receipt model
-        this.receiptModel.extraCharge = this.saleInvoice.extraCharge || 0;
-        this.receiptModel.extraChargeReason = this.saleInvoice.chargeReason || '';
-        this.receiptModel.orders = this.orderItems;
-        this.receiptModel.subTotal = this.saleInvoice?.totalPrice;
-        this.receiptModel.total = this.saleInvoice?.totalPayableAmount;
-        this.receiptModel.discount = this.saleInvoice?.rebate;
-        this.receiptModel.issuedBy = localStorage.getItem('personName') || '';
-        this.receiptModel.customerName = this.customer?.person?.personName;
-        this.receiptModel.cutomerContact = this.customer?.person?.contactNo;
-        this.saleOrders.map((elem) => {
-          if (elem.deliveryStatus != 'DELIVERED') {
-            this.saleOrdersForSchedule.push(elem);
-          }
-          if (elem.state == 'SOLD') {
-            this.saleOrdersForReduce.push(elem);
-          }
-        });
-      },
-      error: (err) => {
-        this.notificationService.showMessage('ERROR', err.message, 'OK', 1000);
-      },
-    });
-  }
+      }
+      
+      // Set the receipt model with proper values
+      this.receiptModel = new ReceiptBody(); // Reset the receipt model
+      this.receiptModel.invoiceNo = this.saleInvoice.invoiceNo;
+      this.receiptModel.extraCharge = this.saleInvoice.extraCharge || 0;
+      this.receiptModel.extraChargeReason = this.saleInvoice.chargeReason || '';
+      this.receiptModel.orders = this.orderItems;
+      this.receiptModel.subTotal = this.saleInvoice?.totalPrice || 0;
+      this.receiptModel.total = this.saleInvoice?.totalPayableAmount || 0;
+      this.receiptModel.discount = this.saleInvoice?.rebate || 0;
+      this.receiptModel.issuedBy = localStorage.getItem('personName') || '';
+      this.receiptModel.customerName = this.customer?.person?.personName;
+      this.receiptModel.cutomerContact = this.customer?.person?.contactNo;
+      
+      // These are the critical lines you were missing:
+      this.receiptModel.totalPaid = Number(this.saleInvoice.totalPaidAmount) || 0;
+      this.receiptModel.previousBalance = Number(this.saleInvoice.previousBalance) || 0;
+      this.receiptModel.totalDue = Number(this.receiptModel.total) - Number(this.receiptModel.totalPaid);
+      
+      this.saleOrders.map((elem) => {
+        if (elem.deliveryStatus != 'DELIVERED') {
+          this.saleOrdersForSchedule.push(elem);
+        }
+        if (elem.state == 'SOLD') {
+          this.saleOrdersForReduce.push(elem);
+        }
+      });
+    },
+    error: (err) => {
+      this.notificationService.showMessage('ERROR', err.message, 'OK', 1000);
+    },
+  });
+}
+
   calculateNewSummary() {
     this.saleInvoice.totalPaid = this.totalPaid + this.payment.newPayment;
     this.saleInvoice.rebate = this.rebate + this.payment.newRebate;
@@ -341,5 +425,7 @@ export class EditSaleInvoiceComponent implements OnInit {
     document.body.innerHTML = originalContents;
     // window.location.reload();
   }
-
+ showPositive(number: any) {
+    return Math.abs(Number(number));
+  }
 }

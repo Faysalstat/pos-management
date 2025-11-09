@@ -32,8 +32,8 @@
                             <td>{{customer?.shopAddress}}</td>
                         </tr> -->
                         <tr>
-                            <th>Balance :</th>
-                            <th>{{customer?.account?.balance}} BDT</th>
+                            <th>{{balanceTitle}} :</th>
+                            <th>{{showPositive(customer?.account?.balance)}} BDT</th>
                         </tr>
                         <tr>
                             <th>Tnx Date:</th>
@@ -50,7 +50,22 @@
                             <th>Total Bill:</th>
                             <th>{{saleInvoice?.totalPrice || 0}} BDT</th>
                         </tr>
-
+                        <tr>
+                            <th>Previous {{balanceTitle}}:</th>
+                            <th>{{showPositive(saleInvoice?.previousBalance) || 0}} BDT</th>
+                        </tr>
+                        <tr *ngIf="saleInvoice?.rebate > 0">
+                            <th>Discount Amount:</th>
+                            <th>{{saleInvoice?.rebate || 0}} BDT</th>
+                        </tr>
+                        <tr *ngIf="saleInvoice?.extraCharge > 0">
+                            <th>Extra Charge:</th>
+                            <th>{{saleInvoice?.extraCharge || 0}} BDT</th>
+                        </tr>
+                        <tr *ngIf="saleInvoice?.extraCharge > 0">
+                            <th>Extra Charge Reason:</th>
+                            <th>{{saleInvoice?.chargeReason}}</th>
+                        </tr>
                         <tr>
                             <th>Total Payable Amount:</th>
                             <th>{{saleInvoice?.totalPayableAmount || 0}} BDT</th>
@@ -60,19 +75,9 @@
                             <th>{{saleInvoice?.totalPaidAmount || 0}} BDT</th>
                         </tr>
                         <tr>
-                            <th>Discount Amount:</th>
-                            <th>{{saleInvoice?.rebate || 0}} BDT</th>
+                            <th>Remening Total Due:</th>
+                            <th>{{(saleInvoice?.totalPayableAmount - saleInvoice?.totalPaidAmount) || 0}} BDT</th>
                         </tr>
-
-                        <tr>
-                            <th>Extra Charge:</th>
-                            <th>{{saleInvoice?.extraCharge || 0}} BDT</th>
-                        </tr>
-                        <tr>
-                            <th>Extra Charge Reason:</th>
-                            <th>{{saleInvoice?.chargeReason}}</th>
-                        </tr>
-
                     </thead>
                 </table>
             </div>

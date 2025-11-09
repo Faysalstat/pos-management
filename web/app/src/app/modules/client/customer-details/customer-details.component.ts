@@ -18,6 +18,7 @@ export class CustomerDetailsComponent implements OnInit {
   showAccountHistory: boolean = false;
   accountId:any;
   tnxTypes:any[];
+  balanceTitle:string = "Balance";
   constructor(
     private activatedRoute: ActivatedRoute,
     private clientService: ClientService,
@@ -48,6 +49,11 @@ export class CustomerDetailsComponent implements OnInit {
           this.customer = res.body.customer;
           this.account = res.body.customer.account;
           this.accountId = this.account.id;
+          if(this.account.balance < 0){
+            this.balanceTitle = "Due";
+          }else{
+            this.balanceTitle = "Balance";
+          }
         }
       },
     });
@@ -83,5 +89,7 @@ export class CustomerDetailsComponent implements OnInit {
     })
     
   }
-
+showPositive(number: any) {
+    return Math.abs(Number(number));
+  }
 }

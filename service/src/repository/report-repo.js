@@ -34,7 +34,7 @@ exports.getDashboardSummary = async (params) => {
   }
   try {
     let orders = await Order.findAll({where:{clientId:clientId}});
-    let supplies = await SupplyOrder.findAll({where:{clientId:clientId}});
+    let supplies = await SupplyOrder.findAll({where:{clientId:clientId, deliveryStatus: 'DELIVERED'}});
     let salesInvoice = await SaleInvoice.findAll({where:{clientId:clientId},include: Order});
     let suppliesInvoice = await SupplyInvoice.findAll({where:{clientId:clientId},include: SupplyOrder });
     let saleOrderSummary = await getTotalFromOrder(orders);

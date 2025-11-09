@@ -213,6 +213,8 @@ export class ReceiptBody {
   extraChargeReason?: string; 
   previousBalance!: number;
   totalPaid!: number;
+  totalDue!: number;
+  balanceTitle!: string;
 }
 export interface IOrderBody{
   item:string;
