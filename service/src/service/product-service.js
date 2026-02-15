@@ -39,8 +39,12 @@ exports.addProduct = async (req) => {
 exports.fetchAllProduct = async (req) => {
   let params = req.query;
   let query = {};
-  let offset = Number(req.query.offset);
+  let offset = Number(req.query.offset) || 0;
   let limit = Number(req.query.limit);
+  // allow large page sizes; default to 10000 when not provided or invalid
+  if (!limit || isNaN(limit) || limit <= 0) {
+    limit = 10000;
+  }
   if (params.brandName && params.brandName != "") {
     query.brandName = params.brandName;
   }
@@ -62,12 +66,13 @@ exports.fetchAllProduct = async (req) => {
     throw new Error("Client ID not provided");
   }
   try {
-    let productList = await Product.findAll({
+    // Use findAndCountAll so we can return total count for pagination
+    const result = await Product.findAndCountAll({
       offset: offset,
       limit: limit,
       where: query,
     });
-    return productList;
+    return { items: result.rows, total: result.count };
   } catch (error) {
     throw new Error(error);
   }

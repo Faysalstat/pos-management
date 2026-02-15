@@ -45,10 +45,18 @@ exports.fetchPackagingCategory = async (req, res, next) => {
 exports.fetchAllProduct = async (req, res, next) => {
   try {
     let productList = await productService.fetchAllProduct(req);
-    return res.status(200).json({
-      message: "data fetched successfully",
-      body: productList,
-    });
+    // Normalize service return: { items: [...], total: N }
+    if (productList && typeof productList === 'object' && productList.items) {
+      if (productList.total !== undefined) {
+        res.set('X-Total-Count', String(productList.total));
+      }
+      return res.status(200).json({
+        message: 'data fetched successfully',
+        body: { items: productList.items, total: productList.total || 0 },
+      });
+    }
+    // Fallback: return whatever the service returned
+    return res.status(200).json({ message: 'data fetched successfully', body: productList });
   } catch (error) {
     return res.status(400).json({
       message: "data added failed." + error.message,
